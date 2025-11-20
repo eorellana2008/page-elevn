@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const token = sessionStorage.getItem('userToken');
-    
+
     // Variable Global para compartir datos con el otro archivo
     window.currentUserData = {};
 
@@ -21,10 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- CARGA DE DATOS ---
     try {
-        const res = await fetch('/api/users/profile', { headers: { 'Authorization': `Bearer ${token}` } });
-        if (res.status === 401) throw new Error('Token expirado');
-        
-        const user = await res.json();
+        const user = await api.getProfile();
         window.currentUserData = user; // Guardamos para uso global
 
         // 1. Llenar Textos Básicos
@@ -70,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             nextMatchEl.innerHTML = `${user.nextMatch.team_home} <span style="color:var(--text-muted)">vs</span> ${user.nextMatch.team_away}`;
             nextTimeEl.textContent = timeStr;
-            
+
             nextCard.style.cursor = 'pointer';
             nextCard.onclick = () => window.location.href = '/results.html';
         } else {

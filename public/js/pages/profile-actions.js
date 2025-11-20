@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const token = sessionStorage.getItem('userToken');
+    // Nota: El token ya lo maneja api.js internamente, no hace falta pedirlo aquí.
 
     // 1. CAMBIAR CONTRASEÑA
     const formChangePass = document.getElementById('formChangePass');
@@ -8,18 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const currentPassword = document.getElementById('current_pass').value;
             const newPassword = document.getElementById('new_pass').value;
+
             try {
-                const res = await fetch('/api/users/profile/password', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ currentPassword, newPassword })
-                });
-                const data = await res.json();
-                if (res.ok) {
+                // Usamos la API centralizada
+                const data = await api.changePassword({ currentPassword, newPassword });
+
+                if (data.message) {
                     alert('¡Contraseña actualizada! Inicia sesión de nuevo.');
                     sessionStorage.clear();
                     window.location.href = '/index.html';
-                } else { alert('Error: ' + data.error); }
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo actualizar'));
+                }
             } catch (e) { alert('Error de conexión'); }
         });
     }
@@ -31,17 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const type = document.getElementById('support_type').value;
             const message = document.getElementById('support_msg').value;
+
             try {
-                const res = await fetch('/api/requests', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ type, message })
-                });
-                if (res.ok) {
+                const data = await api.createRequest({ type, message });
+                
+                if (data.message) {
                     alert('Solicitud enviada.');
                     window.toggleModal('modalSupport', false);
                     document.getElementById('support_msg').value = '';
-                } else { alert('Error al enviar'); }
+                } else {
+                    alert('Error: ' + (data.error || 'Error al enviar'));
+                }
             } catch (e) { alert('Error de conexión'); }
         });
     }
@@ -60,16 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (checkedInput) selectedAvatar = checkedInput.value;
 
             try {
-                const res = await fetch('/api/users/profile/edit', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ username, email, avatar: selectedAvatar, municipality_id })
-                });
-                const data = await res.json();
-                if (res.ok) {
+                const data = await api.updateProfile({ username, email, avatar: selectedAvatar, municipality_id });
+
+                if (data.message) {
                     alert('Perfil actualizado.');
                     location.reload();
-                } else { alert('Error: ' + data.error); }
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo actualizar'));
+                }
             } catch (e) { alert('Error de conexión'); }
         });
     }
@@ -79,17 +77,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // A. Historial de Tickets
 window.abrirModalHistorial = async () => {
-    const token = sessionStorage.getItem('userToken');
     const historyList = document.getElementById('historyList');
     window.toggleModal('modalHistory', true);
     historyList.innerHTML = '<p style="text-align: center; color: #888;">Cargando historial...</p>';
+    
     try {
-        const res = await fetch('/api/requests/myresolved', { headers: { 'Authorization': `Bearer ${token}` } });
-        const history = await res.json();
-        if (history.length === 0) {
+        // Usamos api.js
+        const history = await api.getMyResolvedRequests();
+
+        if (!history || history.length === 0) {
             historyList.innerHTML = '<p style="text-align: center; color: #888;">No tienes tickets resueltos.</p>';
             return;
         }
+
         historyList.innerHTML = history.map(req => {
             const date = new Date(req.created_at).toLocaleDateString();
             return `
@@ -103,22 +103,24 @@ window.abrirModalHistorial = async () => {
                     </div>
                 </div>`;
         }).join('');
-    } catch (e) { historyList.innerHTML = '<p>Error.</p>'; }
+    } catch (e) { historyList.innerHTML = '<p style="color:var(--danger)">Error al cargar.</p>'; }
 };
 
 // B. Historial de Puntos
 window.abrirHistorialPuntos = async () => {
-    const token = sessionStorage.getItem('userToken');
     const listContainer = document.getElementById('pointsList');
     window.toggleModal('modalPointsHistory', true);
     listContainer.innerHTML = '<p style="text-align: center;">Cargando...</p>';
+    
     try {
-        const res = await fetch('/api/predictions/history', { headers: { 'Authorization': `Bearer ${token}` } });
-        const history = await res.json();
-        if (history.length === 0) {
+        // Usamos api.js
+        const history = await api.getPointsHistory();
+
+        if (!history || history.length === 0) {
             listContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Sin partidos finalizados.</p>';
             return;
         }
+
         listContainer.innerHTML = history.map(h => {
             let badgeColor = h.points === 3 ? '#00FFC0' : (h.points === 1 ? '#FFD700' : '#FF6347');
             let ptsText = h.points === 3 ? '+3 🎯' : (h.points === 1 ? '+1 ✅' : '+0');
