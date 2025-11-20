@@ -39,26 +39,52 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             `;
 
-            // CASO 1: Partido Finalizado (Ya tiene marcador oficial)
+            // CASO 1: Partido Finalizado (MEJORADO)
             if (match.status === 'finished') {
-                let pointsHtml = '<span style="color:#FF6347; font-size:0.8em;">No participaste</span>';
+                // Diseño por defecto (No participaste)
+                let pointsHtml = `
+                    <div style="display:flex; align-items:center; gap:5px; color:var(--text-muted); font-size:0.85em; background:var(--bg-input); padding:5px 10px; border-radius:6px; width:fit-content;">
+                        <i class="ri-prohibited-line"></i> No participaste
+                    </div>`;
+
                 if (miPred) {
                     const pts = miPred.points;
-                    let color = '#667eea';
-                    let texto = 'Error';
-                    if (pts === 3) { color = '#00FFC0'; texto = '+3 Pts 🎯'; }
-                    else if (pts === 1) { color = '#FFD700'; texto = '+1 Pt ✅'; }
-                    else if (pts === 0) { color = '#FF6347'; texto = '0 Pts ❌'; }
 
-                    pointsHtml = `<span style="background:${color}; color:${pts === 1 ? '#121212' : 'white'}; padding:4px 10px; border-radius:10px; font-weight:bold; font-size:0.9em;">${texto}</span>`;
+                    if (pts === 3) {
+                        // PLENO (3 Puntos) - Verde Brillante
+                        pointsHtml = `
+                        <div style="background: rgba(0, 255, 192, 0.15); color: #00FFC0; border: 1px solid #00FFC0; padding: 6px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; font-weight: bold; font-size: 0.9em;">
+                            <i class="ri-star-fill"></i> +3 Puntos
+                        </div>`;
+                    }
+                    else if (pts === 1) {
+                        // ACIERTO (1 Punto) - Dorado/Amarillo
+                        pointsHtml = `
+                        <div style="background: rgba(255, 215, 0, 0.15); color: #FFD700; border: 1px solid #FFD700; padding: 6px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; font-weight: bold; font-size: 0.9em;">
+                            <i class="ri-check-double-line"></i> +1 Punto
+                        </div>`;
+                    }
+                    else {
+                        // FALLO (0 Puntos) - Rojo
+                        pointsHtml = `
+                        <div style="background: rgba(252, 129, 129, 0.15); color: var(--danger); border: 1px solid var(--danger); padding: 6px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; font-weight: bold; font-size: 0.9em;">
+                            <i class="ri-close-circle-line"></i> 0 Puntos
+                        </div>`;
+                    }
                 }
 
                 contenidoHTML += `
-                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-top:10px;">
-                        <div style="color:var(--text-muted); font-size:0.7em; text-transform:uppercase;">Final</div>
-                        <div class="final-score">${match.score_home} - ${match.score_away}</div>
-                        <div style="border-top:1px solid var(--border); margin-top:5px; padding-top:10px;">
-                            <small style="color:var(--text-muted);">Tu predicción: <b>${homeVal !== '' ? homeVal : '?'} - ${awayVal !== '' ? awayVal : '?'}</b></small><br><br>
+                    <div style="background:var(--bg-input); padding:15px; border-radius:8px; margin-top:10px; border:1px solid var(--border);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div style="color:var(--text-muted); font-size:0.75em; text-transform:uppercase; letter-spacing:1px;">Resultado Final</div>
+                            <div class="final-score" style="font-size:1.2em; margin:0;">${match.score_home} - ${match.score_away}</div>
+                        </div>
+                        
+                        <div style="border-top:1px solid var(--border); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="font-size:0.9em;">
+                                <span style="color:var(--text-muted);">Tu pronóstico:</span> 
+                                <strong style="color:var(--text-main); margin-left:5px;">${homeVal !== '' ? homeVal : '-'} - ${awayVal !== '' ? awayVal : '-'}</strong>
+                            </div>
                             ${pointsHtml}
                         </div>
                     </div>
@@ -121,14 +147,17 @@ window.guardarPrediccion = async (matchId) => {
     } catch (e) { alert('Error de conexión'); }
 };
 
-// FUNCIÓN PARA RANKING
+// FUNCIÓN PARA RANKING MEJORADO
 window.abrirRanking = async () => {
     const token = sessionStorage.getItem('userToken');
+    // Obtenemos el nombre del usuario actual para resaltarlo en la tabla
+    const currentUserName = document.getElementById('profileName') ? document.getElementById('profileName').textContent : '';
+
     const modal = document.getElementById('modalRanking');
     const tbody = document.getElementById('rankingBody');
 
     modal.classList.remove('hidden');
-    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:15px; color:#aaa;">Cargando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted);">Cargando cracks...</td></tr>';
 
     try {
         const res = await fetch('/api/users/leaderboard', { headers: { 'Authorization': `Bearer ${token}` } });
@@ -136,24 +165,40 @@ window.abrirRanking = async () => {
 
         tbody.innerHTML = '';
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:15px; color:#aaa;">Aún no hay puntajes.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted);">Aún no hay puntajes.</td></tr>';
             return;
         }
 
         data.forEach((user, index) => {
-            let medalla = '';
-            if (index === 0) medalla = '🥇';
-            else if (index === 1) medalla = '🥈';
-            else if (index === 2) medalla = '🥉';
+            let iconHtml = `<span style="font-weight:bold; color:var(--text-muted); font-size:0.9em;">#${index + 1}</span>`;
+            let rowBg = 'transparent';
+            let nameColor = 'var(--text-main)';
+
+            // TOP 3: Iconos de Trofeo con Colores
+            if (index === 0) { // ORO
+                iconHtml = `<i class="ri-trophy-fill" style="color: #FFD700; font-size: 1.4em;"></i>`;
+                rowBg = 'rgba(255, 215, 0, 0.05)'; // Fondo dorado muy suave
+            } else if (index === 1) { // PLATA
+                iconHtml = `<i class="ri-trophy-fill" style="color: #C0C0C0; font-size: 1.2em;"></i>`;
+            } else if (index === 2) { // BRONCE
+                iconHtml = `<i class="ri-trophy-fill" style="color: #CD7F32; font-size: 1.1em;"></i>`;
+            }
 
             const row = `
-                <tr style="border-bottom:1px solid #333;">
-                    <td style="padding:10px;">${index + 1} ${medalla}</td>
-                    <td style="font-weight:bold;">${user.username}</td>
-                    <td style="text-align:right; color:#00FFC0; font-weight:bold;">${user.total_points}</td>
+                <tr style="border-bottom:1px solid var(--border); background: ${rowBg};">
+                    <td style="padding:12px; text-align:center; width: 50px;">${iconHtml}</td>
+                    <td style="padding:12px; font-weight:600; color: ${nameColor};">
+                        ${user.username}
+                    </td>
+                    <td style="padding:12px; text-align:right; color:var(--accent); font-weight:bold; font-size:1.1em;">
+                        ${user.total_points} <span style="font-size:0.7em; color:var(--text-muted); font-weight:400;">pts</span>
+                    </td>
                 </tr>
             `;
             tbody.innerHTML += row;
         });
-    } catch (e) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Error al cargar ranking.</td></tr>'; }
+    } catch (e) {
+        console.error(e);
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Error al cargar ranking.</td></tr>';
+    }
 };
