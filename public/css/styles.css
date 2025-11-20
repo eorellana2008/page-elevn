@@ -1,0 +1,681 @@
+/* =========================================
+   1. CONFIGURACIÓN GLOBAL (MINIMALISTA)
+   ========================================= */
+:root {
+    --bg-body: #111111;
+    /* Fondo casi negro */
+    --bg-card: #1A1A1A;
+    /* Tarjetas gris muy oscuro */
+    --bg-input: #252525;
+    /* Inputs ligeramente más claros */
+    --border: #333333;
+    /* Bordes sutiles */
+    --text-main: #EAEAEA;
+    /* Texto blanco suave (no puro) */
+    --text-muted: #888888;
+    /* Texto secundario */
+    --accent: #4FD1C5;
+    /* Un solo color de acento (Teal suave) */
+    --danger: #FC8181;
+    /* Rojo suave para errores */
+    --success: #68D391;
+    /* Verde suave para éxitos */
+    --radius: 8px;
+    /* Bordes redondeados uniformes */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   2. CONTENEDOR PRINCIPAL
+   ========================================= */
+.container {
+    background-color: var(--bg-card);
+    padding: 40px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Ajuste específico para que las tablas quepan bien */
+#adminPage,
+#resultsPage {
+    max-width: 1000px !important;
+}
+
+h1 {
+    text-align: center;
+    color: var(--text-main);
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+    font-size: 0.95em;
+}
+
+/* =========================================
+   3. FORMULARIOS E INPUTS
+   ========================================= */
+label {
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="datetime-local"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px 15px;
+    /* Ajustado para coincidir mejor visualmente */
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    font-size: 0.95em;
+    transition: border-color 0.2s;
+    /* Altura fija para inputs de texto para alinearse con botones si están al lado */
+    min-height: 42px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: none;
+}
+
+/* =========================================
+   4. BOTONES UNIFICADOS (SIMÉTRICOS)
+   ========================================= */
+/* Estilo Base para TODOS los botones */
+button,
+.btn-save,
+.nav-btn,
+.logout-btn,
+.btn-cancel,
+.btn-change-pass {
+    font-family: inherit;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    /* Para enlaces con clase de botón */
+
+    /* DIMENSIONES FIJAS PARA EVITAR EL TOC */
+    padding: 0 20px;
+    /* Padding lateral igual */
+    height: 42px;
+    /* Altura fija idéntica para todos */
+    margin-top: 0;
+    border: 1px solid transparent;
+    /* Borde base transparente */
+}
+
+/* Botones de Acción Principal (Sólidos) */
+button[type="submit"],
+.btn-save,
+.nav-btn {
+    background-color: var(--accent);
+    color: #111;
+    border-color: var(--accent);
+    /* Borde del mismo color para mantener tamaño */
+}
+
+button[type="submit"]:hover,
+.btn-save:hover,
+.nav-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Botones Secundarios / Outline (Bordeados) */
+.btn-cancel,
+.logout-btn,
+.btn-change-pass {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-muted);
+}
+
+.btn-cancel:hover,
+.logout-btn:hover,
+.btn-change-pass:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+    background: var(--bg-input);
+}
+
+/* Excepción: Botones en formularios deben llenar el ancho */
+form button[type="submit"],
+.modal-buttons button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Ajuste para los botones del Header en Admin (No estirados) */
+.admin-header-buttons .nav-btn,
+.admin-header-buttons .logout-btn {
+    width: auto;
+    min-width: 120px;
+    /* Ancho mínimo uniforme */
+}
+
+/* =========================================
+   5. UTILIDADES DE LOGIN / LINKS
+   ========================================= */
+.switch-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.9em;
+    color: var(--text-muted);
+}
+
+.switch-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.switch-link a:hover {
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.message-display {
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: var(--radius);
+    font-size: 0.9em;
+}
+
+.message-display.success {
+    color: var(--success);
+    border: 1px solid var(--success);
+    background: rgba(104, 211, 145, 0.1);
+}
+
+.message-display.error {
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    background: rgba(252, 129, 129, 0.1);
+}
+
+.password-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.password-container input {
+    margin-bottom: 0;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    z-index: 10;
+    /* Centrar icono verticalmente */
+}
+
+/* =========================================
+   6. ADMIN PANEL & TABLAS
+   ========================================= */
+.admin-header-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.admin-table-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0;
+    overflow: hidden;
+    /* Recorta las esquinas de la tabla */
+    overflow-x: auto;
+    /* Scroll si la tabla es muy ancha */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 15px;
+    color: var(--text-muted);
+    font-size: 0.75em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background-color: rgba(255, 255, 255, 0.02);
+    white-space: nowrap;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-main);
+    font-size: 0.9em;
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 10px;
+    font-size: 0.85em;
+}
+
+/* Botones Pequeños de Acción (Iconos en Tabla) */
+.action-btn {
+    border: none;
+    background: transparent;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.2em;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Reset de estilos de botón grande */
+    height: auto;
+    width: auto;
+    margin: 0;
+}
+
+.action-btn:hover {
+    background-color: var(--bg-input);
+    color: var(--text-main);
+}
+
+.btn-edit:hover {
+    color: var(--accent);
+}
+
+.btn-delete:hover {
+    color: var(--danger);
+}
+
+/* =========================================
+   7. PESTAÑAS (TABS)
+   ========================================= */
+.admin-tabs {
+    display: flex;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border);
+    gap: 0;
+    /* Los tabs van pegados */
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    padding: 0 20px;
+    height: 45px;
+    /* Altura específica para tabs */
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+    border-radius: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tab-btn:hover {
+    color: var(--text-main);
+}
+
+.tab-btn.active {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+}
+
+.tab-content {
+    display: none;
+    margin-top: 20px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* =========================================
+   8. MODALES (CLEAN)
+   ========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h2 {
+    text-align: left;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+/* Textarea específico */
+#modalSupport textarea,
+#modalResponse textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* =========================================
+   9. PERFIL
+   ========================================= */
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+}
+
+.info-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding: 15px 0;
+}
+
+.info-label {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.menu-card {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: var(--radius);
+    text-align: center;
+    color: var(--text-main);
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+}
+
+.menu-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.menu-card div {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: var(--accent);
+}
+
+/* =========================================
+   10. QUINIELA CARDS
+   ========================================= */
+.matches-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.match-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.match-card:hover {
+    border-color: var(--accent);
+}
+
+.teams-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1em;
+    font-weight: 600;
+    margin: 15px 0;
+}
+
+.vs-badge {
+    color: var(--text-muted);
+    font-size: 0.8em;
+    font-weight: 400;
+    background: var(--bg-input);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.prediction-box {
+    background: var(--bg-input);
+    padding: 10px;
+    border-radius: var(--radius);
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
+.pred-input {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3em;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 0;
+    padding: 5px;
+    text-align: center;
+    color: var(--text-main);
+}
+
+.final-score {
+    font-size: 1.5em;
+    color: var(--accent);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* ARREGLOS MODAL MARCADOR */
+.score-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.score-box {
+    width: 80px;
+}
+
+.input-score {
+    width: 100%;
+    height: 60px;
+    text-align: center;
+    font-size: 2em !important;
+    background: var(--bg-input) !important;
+    border: 2px solid var(--border) !important;
+    color: var(--accent) !important;
+    border-radius: 10px;
+}
+
+.input-score:focus {
+    border-color: var(--accent) !important;
+}
+
+.score-separator {
+    font-size: 2em;
+    color: var(--text-muted);
+    font-weight: bold;
+}
+
+/* =========================================
+   11. UTILIDADES
+   ========================================= */
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-15 {
+    margin-bottom: 15px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 0;
+}
+
+.back-link:hover {
+    color: var(--text-main);
+}

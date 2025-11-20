@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MatchDay - Perfil</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+</head>
+
+<body>
+    <div class="container" style="max-width: 500px;">
+
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">
+                <i class="ri-user-3-line"></i>
+            </div>
+
+            <h1 id="profileName" style="font-size: 1.8em; margin: 10px 0;">Cargando...</h1>
+
+            <div
+                style="background: var(--bg-input); display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--accent); margin-bottom: 10px;">
+                <i class="ri-trophy-line" style="color: var(--accent);"></i>
+                <span style="color: var(--text-main); font-weight: bold; font-size: 1.1em;" id="profilePoints">0</span>
+                <span style="color: var(--text-muted); font-size: 0.9em;"> Pts</span>
+            </div>
+
+            <p class="subtitle" id="profileRole"
+                style="margin-top: 5px; text-transform: uppercase; font-size: 0.8em; letter-spacing: 1px;">...</p>
+        </div>
+
+        <div class="info-group">
+            <span class="info-label"><i class="ri-mail-line"></i> Correo</span>
+            <span class="info-value" id="profileEmail">...</span>
+        </div>
+
+        <div class="info-group">
+            <span class="info-label"><i class="ri-map-pin-line"></i> Ubicación</span>
+            <span class="info-value" id="profileLocation">...</span>
+        </div>
+
+        <div class="text-center mt-20">
+            <button onclick="document.getElementById('modalChangePass').classList.remove('hidden')"
+                class="nav-btn btn-change-pass" style="width: auto;">
+                <i class="ri-lock-password-line"></i> Cambiar contraseña
+            </button>
+        </div>
+
+        <h3 class="mt-20"
+            style="border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--text-muted); font-size: 0.9em; text-transform: uppercase;">
+            Menú Principal</h3>
+
+        <div class="menu-grid">
+            <div class="menu-card" onclick="window.location.href='/results.html'">
+                <div><i class="ri-football-line"></i></div>
+                <strong>Quiniela</strong>
+            </div>
+
+            <div class="menu-card" onclick="document.getElementById('modalSupport').classList.remove('hidden')">
+                <div><i class="ri-customer-service-2-line"></i></div>
+                <strong>Soporte</strong>
+            </div>
+
+            <div class="menu-card" onclick="window.abrirModalHistorial()">
+                <div><i class="ri-file-history-line"></i></div>
+                <strong>Historial</strong>
+            </div>
+
+            <div id="btnAdminPanel" class="menu-card hidden" onclick="window.location.href='/admin-panel.html'"
+                style="border-color: var(--accent);">
+                <div style="color: var(--accent);"><i class="ri-admin-line"></i></div>
+                <strong style="color: var(--accent);">Admin Panel</strong>
+            </div>
+        </div>
+
+        <div class="mt-20">
+            <button id="logoutButton" class="logout-btn" style="width: 100%;">
+                <i class="ri-logout-box-line"></i> Cerrar Sesión
+            </button>
+        </div>
+    </div>
+
+    <div id="modalChangePass" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2><i class="ri-lock-line"></i> Seguridad</h2>
+            <form id="formChangePass">
+
+                <!-- CAMBIO: Contraseña Actual -->
+                <label>Contraseña Actual:</label>
+                <div class="password-container">
+                    <input type="password" id="current_pass" required>
+                    <span class="toggle-password" id="toggleCurrentPass">
+                        <i class="ri-eye-line"></i>
+                    </span>
+                </div>
+
+                <!-- CAMBIO: Nueva Contraseña -->
+                <label>Nueva Contraseña:</label>
+                <div class="password-container">
+                    <input type="password" id="new_pass" required>
+                    <span class="toggle-password" id="toggleNewPass">
+                        <i class="ri-eye-line"></i>
+                    </span>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel"
+                        onclick="toggleModal('modalChangePass', false)">Cancelar</button>
+                    <button type="submit" class="btn-save">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalSupport" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2><i class="ri-mail-send-line"></i> Enviar Solicitud</h2>
+            <p class="modal-help-text">Envía tus dudas o reclamos al staff.</p>
+            <form id="formSupport">
+                <label>Tipo:</label>
+                <select id="support_type">
+                    <option value="sugerencia">Sugerencia</option>
+                    <option value="reclamo">Reclamo (Puntos)</option>
+                    <option value="otro">Otro</option>
+                </select>
+                <label>Mensaje:</label>
+                <textarea id="support_msg" rows="4" required placeholder="Escribe aquí..."></textarea>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel"
+                        onclick="toggleModal('modalSupport', false)">Cancelar</button>
+                    <button type="submit" class="btn-save">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalHistory" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2><i class="ri-history-line"></i> Tus Tickets</h2>
+            <div id="historyList" style="max-height: 350px; overflow-y: auto; padding: 5px;">
+                <p style="text-align: center; color: var(--text-muted);">Cargando...</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="toggleModal('modalHistory', false)"
+                    style="width: 100%;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api/api.js"></script>
+    <script src="js/utils/ui.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/pages/profile.js"></script>
+</body>
+
+</html>

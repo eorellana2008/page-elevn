@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MatchDay - Quiniela</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+</head>
+
+<body>
+    <div class="container" id="resultsPage" style="max-width: 800px;">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <a href="/profile.html" class="back-link"><i class="ri-arrow-left-line"></i> Volver</a>
+            <button onclick="abrirRanking()" class="nav-btn"
+                style="background: var(--bg-input); color: #FFD700; border: 1px solid #FFD700;">
+                <i class="ri-trophy-fill"></i> Ranking
+            </button>
+        </div>
+
+        <h1 style="margin-bottom: 5px;">La Quiniela</h1>
+        <p class="subtitle">Haz tus pronósticos.</p>
+
+        <div id="matchesContainer" class="matches-grid">
+            <p style="text-align:center; color: var(--text-muted);">Cargando...</p>
+        </div>
+
+        <div class="mt-20">
+            <button id="logoutButton" class="logout-btn"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div id="modalRanking" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2><i class="ri-bar-chart-grouped-line"></i> Posiciones</h2>
+            <div style="max-height: 300px; overflow-y: auto;">
+                <table style="width:100%;">
+                    <thead>
+                        <tr style="color: var(--accent); border-bottom: 1px solid var(--border);">
+                            <th>#</th>
+                            <th>Usuario</th>
+                            <th class="text-right">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="toggleModal('modalRanking', false)"
+                    style="width:100%;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api/api.js"></script>
+    <script src="js/utils/ui.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/pages/results.js"></script>
+</body>
+
+</html>

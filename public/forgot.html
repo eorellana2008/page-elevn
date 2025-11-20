@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container" style="max-width: 400px;">
+        <h1 style="font-size: 1.5em;">Recuperar Cuenta</h1>
+        <p class="subtitle">Ingresa tu correo para recibir un enlace.</p>
+        
+        <form id="forgotForm">
+            <label>Correo Electrónico:</label>
+            <input type="email" id="forgot_email" required>
+            <button type="submit" id="btnSend">Enviar Enlace</button>
+        </form>
+
+        <p class="switch-link"><a href="/index.html">Volver al Login</a></p>
+        <p id="message" class="message-display hidden"></p>
+    </div>
+
+    <script>
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot_email').value;
+            const msg = document.getElementById('message');
+            const btn = document.getElementById('btnSend');
+
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+
+            try {
+                const res = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+
+                msg.textContent = data.message || data.error;
+                msg.className = res.ok ? 'message-display success' : 'message-display error';
+                msg.classList.remove('hidden');
+            } catch (err) {
+                alert('Error de conexión');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Enviar Enlace';
+            }
+        });
+    </script>
+</body>
+</html>

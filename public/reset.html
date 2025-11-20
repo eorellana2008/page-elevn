@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Contraseña</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container" style="max-width: 400px;">
+        <h1 style="font-size: 1.5em;">Nueva Contraseña</h1>
+        
+        <form id="resetForm">
+            <label>Nueva Contraseña:</label>
+            <input type="password" id="new_password" required>
+            <button type="submit">Cambiar Contraseña</button>
+        </form>
+
+        <p id="message" class="message-display hidden"></p>
+    </div>
+
+    <script>
+        // Obtener el token de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+            document.body.innerHTML = '<h2 style="color:white;text-align:center;">Token inválido o faltante.</h2>';
+        }
+
+        document.getElementById('resetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('new_password').value;
+            const msg = document.getElementById('message');
+
+            try {
+                const res = await fetch('/api/auth/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, newPassword })
+                });
+                const data = await res.json();
+
+                msg.textContent = data.message || data.error;
+                msg.className = res.ok ? 'message-display success' : 'message-display error';
+                msg.classList.remove('hidden');
+
+                if (res.ok) {
+                    setTimeout(() => window.location.href = '/index.html', 2000);
+                }
+            } catch (err) {
+                alert('Error de conexión');
+            }
+        });
+    </script>
+</body>
+</html>
