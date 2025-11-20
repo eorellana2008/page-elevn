@@ -1,26 +1,23 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const token = sessionStorage.getItem('userToken');
+    // El token lo maneja api.js
     const matchesBody = document.querySelector('#matchesTable tbody');
-
-    // Validación de seguridad
-    if (!token || !matchesBody) return;
+    if (!matchesBody) return;
 
     // 1. CARGAR PARTIDOS
     try {
-        const matches = await api.getMatches(token);
+        const matches = await api.getMatches(); // <--- API CLEAN
 
         matchesBody.innerHTML = matches.map(match => {
             const dateObj = new Date(match.match_date);
-            // Formato fecha: dd/mm/yyyy hh:mm
             const dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const isoDate = dateObj.toISOString().slice(0, 16); // Para el input datetime-local del modal
+            // Ajuste de zona horaria manual para el input date (simple) o usar ISO directo
+            // Truco para datetime-local: new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+            const isoDate = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
 
-            // Estado con colores y iconos
             const estadoHtml = match.status === 'finished'
                 ? `<span style="color: var(--success); font-size: 0.85em; font-weight: 600;"><i class="ri-checkbox-circle-line"></i> Finalizado</span>`
                 : `<span style="color: var(--text-muted); font-size: 0.85em;"><i class="ri-time-line"></i> Pendiente</span>`;
 
-            // Marcador central
             const marcador = match.status === 'finished'
                 ? `<span style="background: var(--bg-input); padding: 4px 10px; border-radius: 10px; font-weight: bold; color: var(--text-main); border: 1px solid var(--border);">${match.score_home} - ${match.score_away}</span>`
                 : `<span style="color: var(--accent); font-weight: 600; font-size: 0.9em;">VS</span>`;
@@ -64,9 +61,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 team_away: document.getElementById('team_away').value,
                 match_date: document.getElementById('match_date').value
             };
-            const res = await api.createMatch(data, token);
-            if (res.message) location.reload();
-            else alert('Error al crear partido');
+
+            try {
+                const res = await api.createMatch(data); // <--- API CLEAN
+                if (res.message) {
+                    alert('Partido creado');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (res.error || 'No se pudo crear'));
+                }
+            } catch (e) { alert('Error de conexión'); }
         });
     }
 
@@ -81,15 +85,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 team_away: document.getElementById('edit_team_away').value,
                 match_date: document.getElementById('edit_match_date').value
             };
-            // Usamos fetch directo o api si creaste la función updateMatch
+
             try {
-                const res = await fetch(`/api/matches/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) location.reload();
-            } catch (e) { alert('Error'); }
+                const res = await api.updateMatch(id, data); // <--- API CLEAN
+                if (res.message) {
+                    alert('Partido actualizado');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (res.error || 'No se pudo actualizar'));
+                }
+            } catch (e) { alert('Error de conexión'); }
         });
     }
 
@@ -103,21 +108,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 score_home: document.getElementById('score_home').value,
                 score_away: document.getElementById('score_away').value
             };
+
             try {
-                const res = await fetch(`/api/matches/${id}/score`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) location.reload();
-            } catch (e) { alert('Error'); }
+                const res = await api.updateMatchScore(id, data); // <--- API CLEAN
+                if (res.message) {
+                    alert('Resultado guardado y puntos calculados.');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (res.error || 'No se pudo guardar score'));
+                }
+            } catch (e) { alert('Error de conexión'); }
         });
     }
 });
 
-// ==========================================
-// FUNCIONES GLOBALES
-// ==========================================
+// --- GLOBALES ---
 window.abrirModalMatch = () => window.toggleModal('modalMatch', true);
 
 window.abrirModalEditMatch = (id, home, away, date) => {
@@ -137,8 +142,14 @@ window.abrirModalScore = (id, home, away) => {
 };
 
 window.eliminarPartido = async (id) => {
-    if (!confirm('¿Borrar?')) return;
-    const token = sessionStorage.getItem('userToken');
-    await api.deleteMatch(id, token);
-    location.reload();
+    if (!confirm('¿Borrar partido?')) return;
+    try {
+        const res = await api.deleteMatch(id); // <--- API CLEAN
+        if (res.message) {
+            alert('Partido eliminado');
+            location.reload();
+        } else {
+            alert('Error: ' + (res.error || 'No se pudo eliminar'));
+        }
+    } catch (e) { alert('Error de conexión'); }
 };

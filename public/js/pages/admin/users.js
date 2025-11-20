@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const token = sessionStorage.getItem('userToken');
-    if (!token) return;
+    // (api.js maneja el token)
 
     const setupToggle = (inputId, toggleId) => {
         const input = document.getElementById(inputId);
@@ -13,8 +12,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
     };
-
-    // Configurar Toggles Admin
     setupToggle('new_password', 'toggleCreateUserPass');
     setupToggle('reset_new_password', 'toggleResetPass');
 
@@ -23,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. CARGAR USUARIOS
     if (tableBody) {
         try {
-            const users = await api.getUsers(token);
+            const users = await api.getUsers(); // <--- API CLEAN
 
             if (users.error) {
                 console.error("Error permisos:", users.error);
@@ -32,16 +29,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             tableBody.innerHTML = users.map(user => {
                 const inicial = user.username.charAt(0).toUpperCase();
-                const safeUser = window.UI ? UI.escapeHTML(user.username) : user.username;
-                const safeEmail = window.UI ? UI.escapeHTML(user.email) : user.email;
+                // Solo escapamos visualmente si existe la función, si no usamos raw
+                const safeUser = window.escapeHTML ? window.escapeHTML(user.username) : user.username;
+                const safeEmail = window.escapeHTML ? window.escapeHTML(user.email) : user.email;
 
-                // Colores para la jerarquía de 4 roles
                 let roleColor = 'var(--bg-input)';
                 let textColor = 'var(--text-muted)';
 
-                if (user.role === 'superadmin') { roleColor = '#FFD700'; textColor = '#000'; } // Dorado
-                else if (user.role === 'admin') { roleColor = '#FF4500'; textColor = '#FFF'; } // Rojo
-                else if (user.role === 'moderator') { roleColor = 'var(--accent)'; textColor = '#000'; } // Verde Agua
+                if (user.role === 'superadmin') { roleColor = '#FFD700'; textColor = '#000'; }
+                else if (user.role === 'admin') { roleColor = '#FF4500'; textColor = '#FFF'; }
+                else if (user.role === 'moderator') { roleColor = 'var(--accent)'; textColor = '#000'; }
 
                 return `
                     <tr>
@@ -64,11 +61,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <button class="action-btn btn-edit" onclick="abrirModalEditUser('${user.user_id}', '${safeUser}', '${safeEmail}', '${user.role}')" title="Editar">
                                     <i class="ri-pencil-line"></i>
                                 </button>
-                                
                                 <button class="action-btn btn-delete" onclick="eliminarUsuario(${user.user_id})" title="Eliminar">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
-                                
                                 <button class="action-btn" style="color: #FFD700;" onclick="abrirModalReset('${user.user_id}')" title="Cambiar Pass">
                                     <i class="ri-key-2-line"></i>
                                 </button>
@@ -80,11 +75,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) { console.error("Error cargando usuarios:", e); }
     }
 
-    // 2. CARGAR MUNICIPIOS (NUEVO: ESTO FALTABA)
-    // Se ejecuta al cargar la página para llenar el select del Modal Crear
+    // 2. CARGAR MUNICIPIOS (Para crear usuario)
+    async function cargarMunicipiosAdmin() {
+        const select = document.getElementById('new_municipality');
+        if (!select) return;
+        try {
+            const munis = await api.getMunicipalities(); // <--- API CLEAN
+            if (munis && munis.length > 0) {
+                select.innerHTML = '<option value="">Seleccione una ubicación...</option>' +
+                    munis.map(m => `<option value="${m.municipality_id}">${m.municipality_name} (${m.department_name})</option>`).join('');
+            } else { select.innerHTML = '<option value="">No se encontraron datos</option>'; }
+        } catch (e) { select.innerHTML = '<option value="">Error al cargar</option>'; }
+    }
     await cargarMunicipiosAdmin();
 
-    // 3. LISTENER: CREAR USUARIO
+    // 3. CREAR USUARIO
     const formCrear = document.getElementById('formCrear');
     if (formCrear) {
         formCrear.addEventListener('submit', async (e) => {
@@ -97,22 +102,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 municipality_id: document.getElementById('new_municipality').value
             };
             try {
-                const res = await fetch('/api/users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(newUser)
-                });
-                const json = await res.json();
-                if (res.ok) {
+                const res = await api.createUser(newUser); // <--- API CLEAN
+                if (res.message) {
                     alert('Usuario creado correctamente');
                     location.reload();
+                } else {
+                    alert('Error: ' + (res.error || 'Error al crear'));
                 }
-                else alert('Error: ' + json.error);
             } catch (e) { alert('Error de conexión'); }
         });
     }
 
-    // 4. LISTENER: EDITAR USUARIO
+    // 4. EDITAR USUARIO
     const formEditar = document.getElementById('formEditar');
     if (formEditar) {
         formEditar.addEventListener('submit', async (e) => {
@@ -124,84 +125,42 @@ document.addEventListener('DOMContentLoaded', async () => {
                 role: document.getElementById('edit_role').value
             };
             try {
-                const res = await fetch(`/api/users/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(data)
-                });
-
-                if (res.ok) { alert('Usuario actualizado'); location.reload(); }
-                else {
-                    const err = await res.json();
-                    alert('Error: ' + (err.error || 'No se pudo actualizar'));
-                }
+                const res = await api.updateUser(id, data); // <--- API CLEAN
+                if (res.message) { alert('Usuario actualizado'); location.reload(); }
+                else { alert('Error: ' + (res.error || 'No se pudo actualizar')); }
             } catch (e) { alert('Error de conexión'); }
         });
     }
 
-    // 5. LISTENER: RESET PASSWORD
+    // 5. RESET PASSWORD (ADMIN)
     const formReset = document.getElementById('formReset');
     if (formReset) {
         formReset.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('reset_id').value;
             const newPassword = document.getElementById('reset_new_password').value;
-
             try {
-                const res = await fetch(`/api/users/${id}/password`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ newPassword })
-                });
-
-                if (res.ok) {
+                const res = await api.adminResetPassword(id, newPassword); // <--- API CLEAN
+                if (res.message) {
                     alert('Contraseña restablecida correctamente.');
                     window.toggleModal('modalReset', false);
                     document.getElementById('reset_new_password').value = '';
-                } else {
-                    alert('Error al cambiar contraseña.');
-                }
+                } else { alert('Error: ' + (res.error || 'Falló el cambio')); }
             } catch (e) { alert('Error de conexión'); }
         });
     }
 });
 
-// --- FUNCIONES DE AYUDA ---
-
-// Nueva función para llenar el select
-async function cargarMunicipiosAdmin() {
-    const select = document.getElementById('new_municipality');
-    if (!select) return;
-
-    try {
-        // Usamos la función existente en api.js
-        const munis = await api.getMunicipalities();
-
-        if (munis && munis.length > 0) {
-            let options = '<option value="">Seleccione una ubicación...</option>';
-            munis.forEach(m => {
-                options += `<option value="${m.municipality_id}">${m.municipality_name} (${m.department_name})</option>`;
-            });
-            select.innerHTML = options;
-        } else {
-            select.innerHTML = '<option value="">No se encontraron datos</option>';
-        }
-    } catch (e) {
-        console.error(e);
-        select.innerHTML = '<option value="">Error al cargar</option>';
-    }
-}
+// --- HELPERS GLOBALES ---
 
 function filtrarRolesEnSelect(selectId) {
-    const myRole = sessionStorage.getItem('userRole'); // 'superadmin', 'admin', etc.
+    const myRole = sessionStorage.getItem('userRole');
     const select = document.getElementById(selectId);
     if (!select) return;
 
-    // Mapa de Poder (Debe coincidir con backend para lógica visual)
     const ROLE_POWER = { 'superadmin': 100, 'admin': 50, 'moderator': 20, 'user': 1 };
     const myPower = ROLE_POWER[myRole] || 0;
 
-    // Opciones posibles
     const allRoles = [
         { val: 'user', label: 'Usuario', power: 1 },
         { val: 'moderator', label: 'Moderador', power: 20 },
@@ -209,53 +168,26 @@ function filtrarRolesEnSelect(selectId) {
         { val: 'superadmin', label: 'Super Admin', power: 100 }
     ];
 
-    // Limpiamos el select
     select.innerHTML = '';
-
     allRoles.forEach(role => {
-        // REGLA: Solo muestro roles MENORES al mío
-        // EXCEPCIÓN: El Superadmin ve todo (o todo menos superadmin si quieres)
-
-        if (myRole === 'superadmin') {
-            // Superadmin ve todo
+        if (myRole === 'superadmin' || role.power < myPower) {
             const option = document.createElement('option');
             option.value = role.val;
             option.textContent = role.label;
             select.appendChild(option);
-        } else {
-            // Mortales solo ven roles inferiores
-            if (role.power < myPower) {
-                const option = document.createElement('option');
-                option.value = role.val;
-                option.textContent = role.label;
-                select.appendChild(option);
-            }
         }
     });
 }
-
-
-// ==========================================
-// FUNCIONES GLOBALES
-// ==========================================
-
 
 window.abrirModalEditUser = (id, user, email, role) => {
     document.getElementById('edit_id').value = id;
     document.getElementById('edit_username').value = user;
     document.getElementById('edit_email').value = email;
-    
-    // 1. Filtramos primero
     filtrarRolesEnSelect('edit_role');
-    
-    // 2. Intentamos seleccionar el rol actual del usuario
-    const select = document.getElementById('edit_role');
-    select.value = role; 
 
-    // 3. Si el rol del usuario es mayor o igual al mio, el select quedará vacío o null
-    // En ese caso, deshabilitamos el select para que no se pueda cambiar
-    if (select.value === "") {
-        // Opción cosmética: agregar una opción dummy
+    const select = document.getElementById('edit_role');
+    select.value = role;
+    if (select.value === "") { // Si no tiene permiso para ese rol
         const opt = document.createElement('option');
         opt.text = role.toUpperCase() + " (Sin permiso)";
         opt.value = role;
@@ -265,31 +197,20 @@ window.abrirModalEditUser = (id, user, email, role) => {
     } else {
         select.disabled = false;
     }
-
-    if(window.toggleModal) window.toggleModal('modalEditar', true);
+    if (window.toggleModal) window.toggleModal('modalEditar', true);
 };
 
-window.abrirModalCrear = () => { 
-    // Filtramos las opciones antes de abrir
+window.abrirModalCrear = () => {
     filtrarRolesEnSelect('new_role');
-    
-    if(window.toggleModal) window.toggleModal('modalCrear', true); 
+    if (window.toggleModal) window.toggleModal('modalCrear', true);
 };
 
 window.eliminarUsuario = async (id) => {
     if (!confirm('¿Borrar usuario?')) return;
-    const token = sessionStorage.getItem('userToken');
     try {
-        const res = await fetch(`/api/users/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (res.ok) { alert('Usuario eliminado'); location.reload(); }
-        else {
-            const data = await res.json();
-            alert('Error: ' + (data.error || 'No se pudo eliminar'));
-        }
+        const res = await api.deleteUser(id); // <--- API CLEAN
+        if (res.message) { alert('Usuario eliminado'); location.reload(); }
+        else { alert('Error: ' + (res.error || 'No se pudo eliminar')); }
     } catch (e) { alert('Error de conexión'); }
 };
 

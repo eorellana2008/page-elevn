@@ -22,34 +22,7 @@
         <p id="message" class="message-display hidden"></p>
     </div>
 
-    <script>
-        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('forgot_email').value;
-            const msg = document.getElementById('message');
-            const btn = document.getElementById('btnSend');
-
-            btn.disabled = true;
-            btn.textContent = 'Enviando...';
-
-            try {
-                const res = await fetch('/api/auth/forgot-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
-                });
-                const data = await res.json();
-
-                msg.textContent = data.message || data.error;
-                msg.className = res.ok ? 'message-display success' : 'message-display error';
-                msg.classList.remove('hidden');
-            } catch (err) {
-                alert('Error de conexión');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Enviar Enlace';
-            }
-        });
-    </script>
+    <script src="js/api/api.js"></script>
+    <script src="js/pages/auth.js"></script>
 </body>
 </html>
