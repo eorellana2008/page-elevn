@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const token = sessionStorage.getItem('userToken');
-    
+
     // Variable para guardar los datos actuales del usuario (para el modal de edición)
     let currentUserData = {};
 
@@ -36,19 +36,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('profileLocation').textContent = `${user.municipality || 'N/A'}, ${user.department || ''}`;
         document.getElementById('profilePoints').textContent = user.total_points;
 
-        // --- LÓGICA DE AVATAR (NUEVO) ---
+        // --- LÓGICA DE AVATAR (ACTUALIZADO) ---
         const avatarEl = document.getElementById('profileAvatar');
+
+        // Mapa de iconos (Nombre BD -> Clase RemixIcon)
         const avatarMap = {
             'default': 'ri-user-3-line',
             'ball': 'ri-football-line',
             'robot': 'ri-robot-line',
             'alien': 'ri-aliens-line',
-            'trophy': 'ri-cup-line'
+            'trophy': 'ri-cup-line',
+            'star': 'ri-star-line',
+            'fire': 'ri-fire-line',
+            'flash': 'ri-flashlight-line',
+            'shield': 'ri-shield-line',   
+            'ghost': 'ri-ghost-line',    
+            'rocket': 'ri-rocket-line',   
+            'crown': 'ri-vip-crown-fill'     
         };
+
         // Si no tiene avatar o es desconocido, usa default
         const iconClass = avatarMap[user.avatar] || 'ri-user-3-line';
         avatarEl.innerHTML = `<i class="${iconClass}"></i>`;
-
 
         // 🚨 LÓGICA DE ROLES: Muestra botón si es Staff
         const staffRoles = ['superadmin', 'admin', 'moderator'];
@@ -188,8 +197,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             listContainer.innerHTML = history.map(h => {
                 let badgeColor = '#FF6347'; // Rojo (0 pts)
                 let ptsText = '+0';
-                if (h.points === 3) { badgeColor = '#00FFC0'; ptsText = '+3 🎯'; } 
-                else if (h.points === 1) { badgeColor = '#FFD700'; ptsText = '+1 ✅'; } 
+                if (h.points === 3) { badgeColor = '#00FFC0'; ptsText = '+3 🎯'; }
+                else if (h.points === 1) { badgeColor = '#FFD700'; ptsText = '+1 ✅'; }
 
                 const date = new Date(h.match_date).toLocaleDateString();
 
@@ -220,12 +229,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.abrirModalEditarPerfil = () => {
         document.getElementById('my_username').value = document.getElementById('profileName').textContent;
         document.getElementById('my_email').value = document.getElementById('profileEmail').textContent;
-        
+
         // Pre-seleccionar el avatar actual
         const currentAvatar = currentUserData.avatar || 'default';
         const radioToCheck = document.querySelector(`input[name="avatar"][value="${currentAvatar}"]`);
         if (radioToCheck) radioToCheck.checked = true;
-        
+
         window.toggleModal('modalEditProfile', true);
     };
 
@@ -236,7 +245,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             const username = document.getElementById('my_username').value;
             const email = document.getElementById('my_email').value;
-            
+
             // Obtener avatar seleccionado
             let selectedAvatar = 'default';
             const checkedInput = document.querySelector('input[name="avatar"]:checked');
