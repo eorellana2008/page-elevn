@@ -1,20 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken, verifyStaff, verifySuperAdmin } = require('../middleware/authMiddleware');
+const { verifyToken, verifyStaff } = require('../middleware/authMiddleware');
 
-const userController = require('../controllers/userController');
+// Importamos los DOS controladores nuevos
+const profileController = require('../controllers/profileController');
+const adminController = require('../controllers/adminController');
 
-// Rutas PERFIL (Cualquier usuario logueado)
-router.get('/profile', verifyToken, userController.getProfile);
-router.put('/profile/password', verifyToken, userController.changePassword);
-router.get('/leaderboard', verifyToken, userController.getLeaderboard);
-router.put('/profile/edit', verifyToken, userController.updateMyProfile);
+// ==========================================
+// 1. RUTAS DE PERFIL (Usuario Logueado)
+// ==========================================
+router.get('/profile', verifyToken, profileController.getProfile);
+router.put('/profile/edit', verifyToken, profileController.updateMyProfile); // Mantenemos la ruta /edit
+router.put('/profile/password', verifyToken, profileController.changePassword);
+router.get('/leaderboard', verifyToken, profileController.getLeaderboard);
 
-// Rutas ADMIN
-router.get('/', verifyToken, verifyStaff, userController.getAllUsers);
-router.post('/', verifyToken, verifyStaff, userController.createUser);
-router.put('/:id', verifyToken, verifyStaff, userController.updateUser);
-router.delete('/:id', verifyToken, verifyStaff, userController.deleteUser);
-router.put('/:id/password', verifyToken, verifyStaff, userController.adminResetPassword);
+// ==========================================
+// 2. RUTAS DE ADMINISTRACIÓN (Requieren Staff)
+// ==========================================
+router.get('/', verifyToken, verifyStaff, adminController.getAllUsers);
+router.post('/', verifyToken, verifyStaff, adminController.createUser);
+router.put('/:id', verifyToken, verifyStaff, adminController.updateUser);
+router.delete('/:id', verifyToken, verifyStaff, adminController.deleteUser);
+router.put('/:id/password', verifyToken, verifyStaff, adminController.adminResetPassword);
 
 module.exports = router;
