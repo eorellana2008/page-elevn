@@ -8,6 +8,7 @@ const userController = require('../controllers/userController');
 router.get('/profile', verifyToken, userController.getProfile);
 router.put('/profile/password', verifyToken, userController.changePassword);
 router.get('/leaderboard', verifyToken, userController.getLeaderboard);
+router.put('/profile/edit', verifyToken, userController.updateMyProfile);
 
 // Rutas ADMIN
 router.get('/', verifyToken, verifyStaff, userController.getAllUsers);

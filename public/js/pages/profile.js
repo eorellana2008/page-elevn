@@ -198,4 +198,40 @@ document.addEventListener('DOMContentLoaded', async () => {
             listContainer.innerHTML = '<p style="text-align: center; color: var(--danger);">Error al cargar datos.</p>';
         }
     };
+    // ABRIR MODAL Y PRELLENAR DATOS
+    window.abrirModalEditarPerfil = () => {
+        // Usamos los valores que ya están en pantalla para prellenar
+        document.getElementById('my_username').value = document.getElementById('profileName').textContent;
+        document.getElementById('my_email').value = document.getElementById('profileEmail').textContent;
+        window.toggleModal('modalEditProfile', true);
+    };
+
+    // ENVIAR FORMULARIO
+    const formEditProfile = document.getElementById('formEditProfile');
+    if (formEditProfile) {
+        formEditProfile.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('my_username').value;
+            const email = document.getElementById('my_email').value;
+
+            try {
+                const res = await fetch('/api/users/profile/edit', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ username, email })
+                });
+                
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('Perfil actualizado.');
+                    location.reload(); // Recargar para ver cambios
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        });
+    }
 });

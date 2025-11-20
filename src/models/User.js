@@ -128,7 +128,12 @@ const User = {
         `;
         const [rows] = await pool.query(query, [userId]);
         return rows[0];
-    }
+    },
+
+    updateBasicInfo: async (id, username, email) => {
+        const query = 'UPDATE users SET username = ?, email = ? WHERE user_id = ?';
+        return await pool.query(query, [username, email, id]);
+    },
 };
 
 module.exports = User;
