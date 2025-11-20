@@ -120,6 +120,11 @@ textarea:focus {
     box-shadow: none;
 }
 
+select option {
+    background-color: var(--bg-card);  /* Fondo oscuro (Gris #1A1A1A) */
+    color: var(--text-main);           /* Texto claro */
+    padding: 10px;                     /* Espaciado (funciona en Firefox, ignorado en Chrome) */
+}
 /* =========================================
    4. BOTONES UNIFICADOS (SIMÉTRICOS)
    ========================================= */
