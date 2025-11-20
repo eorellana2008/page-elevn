@@ -49,10 +49,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             'star': 'ri-star-line',
             'fire': 'ri-fire-line',
             'flash': 'ri-flashlight-line',
-            'shield': 'ri-shield-line',   
-            'ghost': 'ri-ghost-line',    
-            'rocket': 'ri-rocket-line',   
-            'crown': 'ri-vip-crown-fill'     
+            'shield': 'ri-shield-line',
+            'ghost': 'ri-ghost-line',
+            'rocket': 'ri-rocket-line',
+            'crown': 'ri-vip-crown-fill'
         };
 
         // Si no tiene avatar o es desconocido, usa default
@@ -226,11 +226,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // 6. EDITAR PERFIL (Abrir Modal)
-    window.abrirModalEditarPerfil = () => {
+    window.abrirModalEditarPerfil = async () => {
+        // 1. Pre-llenar datos básicos
         document.getElementById('my_username').value = document.getElementById('profileName').textContent;
         document.getElementById('my_email').value = document.getElementById('profileEmail').textContent;
 
-        // Pre-seleccionar el avatar actual
+        // 2. Cargar Municipios (Si el select está vacío o solo tiene 'Cargando...')
+        const muniSelect = document.getElementById('my_municipality');
+
+        // Usamos una bandera simple para no recargar si ya están cargados
+        if (muniSelect.options.length <= 1) {
+            try {
+                const munis = await api.getMunicipalities(); // Usamos tu función helper existente
+                muniSelect.innerHTML = '<option value="">Selecciona tu ubicación...</option>' +
+                    munis.map(m => `<option value="${m.municipality_id}">${m.municipality_name} (${m.department_name})</option>`).join('');
+            } catch (e) {
+                muniSelect.innerHTML = '<option value="">Error al cargar</option>';
+            }
+        }
+
+        // 3. Pre-seleccionar el MUNICIPIO actual
+        // (currentUserData lo definimos al inicio del archivo en pasos anteriores)
+        if (currentUserData && currentUserData.municipality_id) {
+            muniSelect.value = currentUserData.municipality_id;
+        }
+
+        // 4. Pre-seleccionar el AVATAR actual
         const currentAvatar = currentUserData.avatar || 'default';
         const radioToCheck = document.querySelector(`input[name="avatar"][value="${currentAvatar}"]`);
         if (radioToCheck) radioToCheck.checked = true;
@@ -238,15 +259,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.toggleModal('modalEditProfile', true);
     };
 
-    // 7. GUARDAR PERFIL
+    // 7. GUARDAR PERFIL (Actualizado con Municipio)
     const formEditProfile = document.getElementById('formEditProfile');
     if (formEditProfile) {
         formEditProfile.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('my_username').value;
             const email = document.getElementById('my_email').value;
+            const municipality_id = document.getElementById('my_municipality').value; // <--- NUEVO
 
-            // Obtener avatar seleccionado
             let selectedAvatar = 'default';
             const checkedInput = document.querySelector('input[name="avatar"]:checked');
             if (checkedInput) selectedAvatar = checkedInput.value;
@@ -255,14 +276,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const res = await fetch('/api/users/profile/edit', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ username, email, avatar: selectedAvatar })
+                    // Enviamos municipality_id también
+                    body: JSON.stringify({ username, email, avatar: selectedAvatar, municipality_id })
                 });
 
                 const data = await res.json();
 
                 if (res.ok) {
                     alert('Perfil actualizado.');
-                    location.reload(); // Recargar para ver cambios y nuevo avatar
+                    location.reload();
                 } else {
                     alert('Error: ' + data.error);
                 }

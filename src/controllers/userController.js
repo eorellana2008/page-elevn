@@ -16,10 +16,10 @@ const getProfile = async (req, res) => {
         // 1. Obtener datos básicos del usuario
         const user = await User.findById(req.user.userId);
         if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-        
+
         // 2. Obtener estadísticas
         const stats = await User.getStats(req.user.userId);
-        
+
         // 3. Obtener próximo partido
         const nextMatch = await Match.findNext();
 
@@ -56,42 +56,45 @@ const changePassword = async (req, res) => {
     try {
         const user = await User.findById(userId);
         if (!user || !user.password_hash) return res.status(404).json({ error: 'Hash no encontrado.' });
-        
+
         const match = await bcrypt.compare(currentPassword, user.password_hash);
         if (!match) return res.status(401).json({ error: 'Contraseña actual incorrecta.' });
-        
+
         const hash = await bcrypt.hash(newPassword, 10);
         await User.updatePassword(userId, hash);
         res.json({ message: 'Contraseña actualizada.' });
     } catch (error) { res.status(500).json({ error: 'Error al actualizar.' }); }
 };
 
-// Permite al usuario editar sus propios datos básicos
 const updateMyProfile = async (req, res) => {
     const userId = req.user.userId;
-    // Ahora esperamos 'avatar' también
-    const { username, email, avatar } = req.body;
+    // Agregamos municipality_id
+    const { username, email, avatar, municipality_id } = req.body;
 
-    if (!username || !email) {
+    if (!username || !email || !municipality_id) {
         return res.status(400).json({ error: 'Faltan datos obligatorios.' });
     }
 
     try {
-        // Usamos el nuevo método con 4 parámetros
-        // Si no envían avatar, usamos 'default' por seguridad
         const safeAvatar = avatar || 'default';
-        
-        await User.updateBasicInfo(userId, username, email, safeAvatar);
-        
+        const safeMuni = parseInt(municipality_id); // Aseguramos que sea número
+
+        // Pasamos los 5 argumentos
+        await User.updateBasicInfo(userId, username, email, safeAvatar, safeMuni);
+
         res.json({ message: 'Perfil actualizado correctamente.' });
 
     } catch (error) {
-        // ... (manejo de errores igual que antes)
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ error: 'El usuario o correo ya está registrado.' });
+        }
+        console.error(error);
+        res.status(500).json({ error: 'Error al actualizar perfil.' });
     }
 };
 
 const getLeaderboard = async (req, res) => {
-    try { const rows = await User.getLeaderboard(); res.json(rows); } 
+    try { const rows = await User.getLeaderboard(); res.json(rows); }
     catch (error) { res.status(500).json({ error: 'Error en ranking' }); }
 };
 
@@ -104,7 +107,7 @@ const getAllUsers = async (req, res) => {
         return res.status(403).json({ error: 'Los moderadores no tienen acceso a la lista de usuarios.' });
     }
     */
-    try { const users = await User.getAllDetailed(); res.json(users); } 
+    try { const users = await User.getAllDetailed(); res.json(users); }
     catch (error) { res.status(500).json({ error: 'Error al listar.' }); }
 };
 
@@ -115,7 +118,7 @@ const createUser = async (req, res) => {
     }
 
     const { username, email, password, role, municipality_id } = req.body;
-    
+
     // Validación de Jerarquía para Admin vs Superadmin
     const myPower = ROLE_POWER[req.user.role] || 0;
     const targetPower = ROLE_POWER[role] || 0;
@@ -145,7 +148,7 @@ const updateUser = async (req, res) => {
 
     const { id } = req.params;
     const { username, email, role } = req.body;
-    
+
     try {
         // Validaciones de poder existentes...
         const targetUserCurrent = await User.findById(id);
@@ -195,7 +198,7 @@ const adminResetPassword = async (req, res) => {
 
     const { id } = req.params;
     const { newPassword } = req.body;
-    
+
     try {
         const targetUser = await User.findById(id);
         const myPower = ROLE_POWER[req.user.role];
@@ -211,7 +214,7 @@ const adminResetPassword = async (req, res) => {
     } catch (error) { res.status(500).json({ error: 'Error al restablecer.' }); }
 };
 
-module.exports = { 
+module.exports = {
     getProfile, changePassword, updateMyProfile, // <-- Agregado
-    getLeaderboard, getAllUsers, createUser, updateUser, deleteUser, adminResetPassword 
+    getLeaderboard, getAllUsers, createUser, updateUser, deleteUser, adminResetPassword
 };

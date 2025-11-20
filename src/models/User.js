@@ -69,12 +69,10 @@ const User = {
         return rows;
     },
 
-    // Usado en Perfil
-    // Usado en Perfil
     findById: async (id) => {
         const query = `
             SELECT u.user_id, u.username, u.email, u.created_at, 
-                   u.password_hash, u.avatar, 
+                   u.password_hash, u.avatar, u.municipality_id, /* <--- AGREGADO */
                    m.name as municipality, d.name as department, r.name as role,
                    (SELECT COALESCE(SUM(points), 0) FROM predictions WHERE user_id = u.user_id) as total_points
             FROM users u
@@ -131,9 +129,9 @@ const User = {
         return rows[0];
     },
 
-    updateBasicInfo: async (id, username, email, avatar) => {
-        const query = 'UPDATE users SET username = ?, email = ?, avatar = ? WHERE user_id = ?';
-        return await pool.query(query, [username, email, avatar, id]);
+    updateBasicInfo: async (id, username, email, avatar, municipality_id) => {
+        const query = 'UPDATE users SET username = ?, email = ?, avatar = ?, municipality_id = ? WHERE user_id = ?';
+        return await pool.query(query, [username, email, avatar, municipality_id, id]);
     },
 };
 
