@@ -161,5 +161,23 @@ const api = {
             method: 'PUT', body: JSON.stringify({ responseMessage })
         });
         return res ? res.json() : {};
+    },
+
+    // --- LIGAS PRIVADAS (V4.0) ---
+    createLeague: async (data) => {
+        const res = await fetchWithAuth('/leagues/create', { method: 'POST', body: JSON.stringify(data) });
+        return res ? res.json() : { error: 'Error' };
+    },
+    joinLeague: async (data) => {
+        const res = await fetchWithAuth('/leagues/join', { method: 'POST', body: JSON.stringify(data) });
+        return res ? res.json() : { error: 'Error' };
+    },
+    getMyLeagues: async () => {
+        const res = await fetchWithAuth('/leagues/my');
+        return res ? res.json() : [];
+    },
+    getLeagueDetails: async (id) => {
+        const res = await fetchWithAuth(`/leagues/${id}`);
+        return res ? res.json() : [];
     }
-};  
+};

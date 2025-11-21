@@ -17,6 +17,7 @@ app.use('/api/users', require('./src/routes/userRoutes'));
 app.use('/api/matches', require('./src/routes/matchRoutes'));
 app.use('/api/predictions', require('./src/routes/predictionRoutes'));
 app.use('/api/requests', require('./src/routes/requestRoutes'));
+app.use('/api/leagues', require('./src/routes/leagueRoutes'));
 
 // Test DB
 db.getConnection()

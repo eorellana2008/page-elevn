@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MatchDay - Ligas</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container" style="max-width: 600px;">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <a href="/profile.html" class="back-link"><i class="ri-arrow-left-line"></i> Volver</a>
+            <div style="display:flex; gap:10px;">
+                <button onclick="abrirModalUnirse()" class="nav-btn" style="background: var(--bg-input); border: 1px solid var(--accent); color: var(--accent); width:auto; padding: 0 15px;">
+                    <i class="ri-login-box-line"></i> Unirme
+                </button>
+                <button onclick="abrirModalCrear()" class="nav-btn" style="width:auto; padding: 0 15px;">
+                    <i class="ri-add-line"></i> Crear
+                </button>
+            </div>
+        </div>
+
+        <h1 style="margin-bottom: 5px;">Mis Ligas</h1>
+        <p class="subtitle">Compite con tus amigos.</p>
+
+        <div id="leaguesContainer" style="display: flex; flex-direction: column; gap: 15px;">
+            <p style="text-align:center; color: var(--text-muted); margin-top: 20px;">Cargando...</p>
+        </div>
+    </div>
+
+    <div id="modalCreate" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2><i class="ri-trophy-line"></i> Nueva Liga</h2>
+            <p class="modal-help-text">Ponle un nombre épico a tu torneo.</p>
+            <form id="formCreate">
+                <label>Nombre de la Liga:</label>
+                <input type="text" id="league_name" required placeholder="Ej: Los del Barrio">
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="toggleModal('modalCreate', false)">Cancelar</button>
+                    <button type="submit" class="btn-save">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalJoin" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2><i class="ri-ticket-line"></i> Unirse a Liga</h2>
+            <p class="modal-help-text">Ingresa el código de invitación.</p>
+            <form id="formJoin">
+                <label>Código de Liga:</label>
+                <input type="text" id="league_code" required placeholder="Ej: ABCD12" style="text-transform: uppercase; text-align: center; font-size: 1.5em; letter-spacing: 3px;">
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="toggleModal('modalJoin', false)">Cancelar</button>
+                    <button type="submit" class="btn-save">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalRanking" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2 id="leagueTitleRanking"><i class="ri-bar-chart-grouped-line"></i> Tabla</h2>
+            <div style="max-height: 350px; overflow-y: auto;">
+                <table style="width:100%;">
+                    <thead>
+                        <tr style="color: var(--accent); border-bottom: 1px solid var(--border);">
+                            <th>#</th>
+                            <th>Usuario</th>
+                            <th class="text-right">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="toggleModal('modalRanking', false)" style="width:100%;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api/api.js"></script>
+    <script src="js/utils/ui.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/pages/leagues.js"></script>
+</body>
+</html>
