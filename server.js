@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Rutas
 app.use('/api/auth', require('./src/routes/authRoutes'));
-app.use('/api/location', require('./src/routes/locationRoutes'));
+app.use('/api/countries', require('./src/routes/countryRoutes'));
 app.use('/api/users', require('./src/routes/userRoutes'));
 app.use('/api/matches', require('./src/routes/matchRoutes'));
 app.use('/api/predictions', require('./src/routes/predictionRoutes'));

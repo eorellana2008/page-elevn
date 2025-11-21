@@ -53,9 +53,9 @@ const api = {
         return res.json();
     },
 
-    // --- LOCATION ---
-    getMunicipalities: async () => {
-        const res = await fetch(`${API_BASE}/location/municipalities`);
+    // --- LOCATION / COUNTRIES ---
+    getCountries: async () => {
+        const res = await fetch(`${API_BASE}/countries`);
         return res.json();
     },
 

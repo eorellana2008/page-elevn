@@ -7,10 +7,12 @@ const crypto = require('crypto');
 const sendEmail = require('../utils/emails');
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const registerUser = async (req, res) => {
-    const { username, password, email, municipality_id } = req.body;
 
-    if (!username || !password || !email || !municipality_id) {
+const registerUser = async (req, res) => {
+
+    const { username, password, email, country_id } = req.body;
+
+    if (!username || !password || !email || !country_id) {
         return res.status(400).json({ error: 'Faltan campos obligatorios.' });
     }
 
@@ -22,7 +24,7 @@ const registerUser = async (req, res) => {
             email,
             password_hash,
             role_id: 4,
-            municipality_id
+            country_id
         });
 
         res.status(201).json({ message: 'Usuario registrado exitosamente.' });
@@ -78,7 +80,7 @@ const forgotPassword = async (req, res) => {
 
         await User.saveResetToken(user.user_id, token);
 
-        const baseUrl = process.env.FRONTEND_URL;
+        const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const resetUrl = `${baseUrl}/reset.html?token=${token}`;
 
         const message = `

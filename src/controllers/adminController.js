@@ -23,7 +23,8 @@ const createUser = async (req, res) => {
         return res.status(403).json({ error: 'Acceso denegado. Solo Admins pueden crear usuarios.' });
     }
 
-    const { username, email, password, role, municipality_id } = req.body;
+    // CAMBIO: Recibimos country_id
+    const { username, email, password, role, country_id } = req.body;
     
     const myPower = ROLE_POWER[req.user.role] || 0;
     const targetPower = ROLE_POWER[role] || 0;
@@ -35,9 +36,11 @@ const createUser = async (req, res) => {
     try {
         const hash = await bcrypt.hash(password, 10);
         let role_id = (role === 'superadmin') ? 1 : (role === 'admin' ? 2 : (role === 'moderator' ? 3 : 4));
-        const muni = municipality_id ? parseInt(municipality_id) : 1;
+        
+        // CAMBIO: Validar y pasar country_id
+        const country = country_id ? parseInt(country_id) : null;
 
-        await User.create({ username, email, password_hash: hash, role_id, municipality_id: muni });
+        await User.create({ username, email, password_hash: hash, role_id, country_id: country });
         res.status(201).json({ message: 'Usuario creado correctamente.' });
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') return res.status(409).json({ error: 'Usuario/Email ya existe.' });

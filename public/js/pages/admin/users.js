@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const tableBody = document.querySelector('#usersTable tbody');
 
-    // CARGAR USUARIOS
+    // 1. CARGAR USUARIOS
     if (tableBody) {
         try {
             const users = await api.getUsers();
@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 else if (user.role === 'admin') { roleColor = '#FF4500'; textColor = '#FFF'; }
                 else if (user.role === 'moderator') { roleColor = 'var(--accent)'; textColor = '#000'; }
 
+                // CORRECCIÓN 1: Usar variables de País (country_name / country_code)
+                const locationText = user.country_name ? `${user.country_name} (${user.country_code})` : 'Sin ubicación';
+
                 return `
                     <tr>
                         <td>#${user.user_id}</td>
@@ -48,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                         </td>
                         <td>${safeEmail}</td>
-                        <td>${user.municipality || 'N/A'}</td>
+                        <td>${locationText}</td>
                         <td>
                             <span style="background: ${roleColor}; color: ${textColor}; padding: 4px 8px; border-radius: 4px; font-size: 0.75em; font-weight: 700; letter-spacing: 0.5px;">
                                 ${user.role.toUpperCase()}
@@ -73,21 +76,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) { console.error("Error cargando usuarios:", e); }
     }
 
-    // CARGAR MUNICIPIOS (Para crear usuario)
-    async function cargarMunicipiosAdmin() {
-        const select = document.getElementById('new_municipality');
+    // 2. CARGAR PAÍSES (CORREGIDO)
+    async function cargarPaisesAdmin() {
+        // OJO: Asegúrate de que en admin-panel.html cambiaste el id a "new_country"
+        const select = document.getElementById('new_country');
         if (!select) return;
         try {
-            const munis = await api.getMunicipalities();
-            if (munis && munis.length > 0) {
-                select.innerHTML = '<option value="">Seleccione una ubicación...</option>' +
-                    munis.map(m => `<option value="${m.municipality_id}">${m.municipality_name} (${m.department_name})</option>`).join('');
-            } else { select.innerHTML = '<option value="">No se encontraron datos</option>'; }
+            const countries = await api.getCountries();
+            if (countries && countries.length > 0) {
+                select.innerHTML = '<option value="">Seleccione un país...</option>' +
+                    countries.map(c => `<option value="${c.country_id}">${c.name}</option>`).join('');
+            } else { select.innerHTML = '<option value="">No hay datos</option>'; }
         } catch (e) { select.innerHTML = '<option value="">Error al cargar</option>'; }
     }
-    await cargarMunicipiosAdmin();
+    await cargarPaisesAdmin();
 
-    // CREAR USUARIO
+    // 3. CREAR USUARIO (CORREGIDO)
     const formCrear = document.getElementById('formCrear');
     if (formCrear) {
         formCrear.addEventListener('submit', async (e) => {
@@ -97,7 +101,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 email: document.getElementById('new_email').value,
                 password: document.getElementById('new_password').value,
                 role: document.getElementById('new_role').value,
-                municipality_id: document.getElementById('new_municipality').value
+                // CORRECCIÓN 2: Leer ID nuevo y enviar country_id
+                country_id: document.getElementById('new_country').value
             };
             try {
                 const res = await api.createUser(newUser);
@@ -111,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // EDITAR USUARIO
+    // EDITAR USUARIO (Se mantiene igual, el update de admin solo toca rol/email/user)
     const formEditar = document.getElementById('formEditar');
     if (formEditar) {
         formEditar.addEventListener('submit', async (e) => {
@@ -138,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const id = document.getElementById('reset_id').value;
             const newPassword = document.getElementById('reset_new_password').value;
             try {
-                const res = await api.adminResetPassword(id, newPassword); 
+                const res = await api.adminResetPassword(id, newPassword);
                 if (res.message) {
                     alert('Contraseña restablecida correctamente.');
                     window.toggleModal('modalReset', false);

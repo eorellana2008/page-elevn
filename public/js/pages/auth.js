@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // 1. PÁGINA DE LOGIN / REGISTRO (index.html)
+    // 1. LOGIN / REGISTRO
     // ==========================================
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
 
-    // Toggles de contraseña
+    // Toggles de contraseña (Ojos)
     const setupToggle = (inputId, toggleId) => {
         const input = document.getElementById(inputId);
         const toggle = document.getElementById(toggleId);
@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setupToggle('login_password', 'toggleLoginPassword');
         setupToggle('password', 'toggleRegisterPassword');
 
-        // Navegación entre Login y Registro
         const showRegister = document.getElementById('showRegister');
         const showLogin = document.getElementById('showLogin');
         const loginView = document.getElementById('loginView');
@@ -59,19 +58,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 try {
                     const data = await api.login(credentials);
-
                     if (data.token) {
                         sessionStorage.setItem('userToken', data.token);
                         sessionStorage.setItem('userRole', data.role);
-
-                        // Feedback visual
                         if (msgDisplay) {
                             msgDisplay.textContent = `Bienvenido, ${data.username}...`;
                             msgDisplay.className = 'message-display success';
                             msgDisplay.classList.remove('hidden');
+                            msgDisplay.style.color = '#00FFC0';
                         }
+                        setTimeout(() => {
+                            window.location.href = '/profile.html';
+                        }, 1500);
 
-                        setTimeout(() => window.location.href = '/profile.html', 1000);
                     } else {
                         alert(data.error || 'Credenciales inválidas');
                     }
@@ -79,10 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Lógica REGISTRO
+        // Lógica REGISTRO (ACTUALIZADA PAÍSES)
         if (registerForm) {
-            // Cargar municipios al iniciar
-            cargarMunicipiosAuth();
+            // Cargar PAÍSES al iniciar
+            cargarPaisesAuth();
 
             registerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -90,12 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     username: document.getElementById('username').value,
                     password: document.getElementById('password').value,
                     email: document.getElementById('email').value,
-                    municipality_id: parseInt(document.getElementById('municipality').value)
+                    country_id: parseInt(document.getElementById('country').value)
                 };
 
                 try {
                     const data = await api.register(userData);
-
                     if (data.message && !data.error) {
                         alert('¡Registro exitoso! Inicia sesión.');
                         registerForm.reset();
@@ -178,15 +176,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Helper para cargar municipios en el registro
-async function cargarMunicipiosAuth() {
-    const select = document.getElementById('municipality');
+// Helper NUEVO para cargar PAÍSES
+async function cargarPaisesAuth() {
+    const select = document.getElementById('country');
     if (!select) return;
     try {
-        const munis = await api.getMunicipalities();
-        if (munis && munis.length > 0) {
-            select.innerHTML = '<option value="">Seleccione...</option>' +
-                munis.map(m => `<option value="${m.municipality_id}">${m.municipality_name} (${m.department_name})</option>`).join('');
+        const countries = await api.getCountries();
+        if (countries.length > 0) {
+            select.innerHTML = '<option value="">Selecciona tu país...</option>' +
+                countries.map(c => `<option value="${c.country_id}">${c.name}</option>`).join('');
         }
     } catch (e) {
         select.innerHTML = '<option value="">Error al cargar</option>';

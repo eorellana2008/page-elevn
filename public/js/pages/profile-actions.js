@@ -50,14 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const username = document.getElementById('my_username').value;
             const email = document.getElementById('my_email').value;
-            const municipality_id = document.getElementById('my_municipality').value;
+            const country_id = document.getElementById('my_country').value;
             
             let selectedAvatar = 'default';
             const checkedInput = document.querySelector('input[name="avatar"]:checked');
             if (checkedInput) selectedAvatar = checkedInput.value;
 
             try {
-                const data = await api.updateProfile({ username, email, avatar: selectedAvatar, municipality_id });
+                const data = await api.updateProfile({ username, email, avatar: selectedAvatar, country_id });
 
                 if (data.message) {
                     alert('Perfil actualizado.');
@@ -142,18 +142,17 @@ window.abrirModalEditarPerfil = async () => {
     document.getElementById('my_username').value = document.getElementById('profileName').textContent;
     document.getElementById('my_email').value = document.getElementById('profileEmail').textContent;
 
-    // Cargar municipios si hace falta
-    const muniSelect = document.getElementById('my_municipality');
-    if (muniSelect.options.length <= 1) {
+    const countrySelect = document.getElementById('my_country');
+    if (countrySelect.options.length <= 1) {
         try {
-            const munis = await api.getMunicipalities();
-            muniSelect.innerHTML = '<option value="">Selecciona...</option>' + 
-                munis.map(m => `<option value="${m.municipality_id}">${m.municipality_name} (${m.department_name})</option>`).join('');
+            const countries = await api.getCountries();
+            countrySelect.innerHTML = '<option value="">Selecciona...</option>' + 
+                countries.map(c => `<option value="${c.country_id}">${c.name}</option>`).join('');
         } catch (e) {}
     }
 
     const userData = window.currentUserData || {};
-    if (userData.municipality_id) muniSelect.value = userData.municipality_id;
+    if (userData.country_id) countrySelect.value = userData.country_id;
     
     const currentAvatar = userData.avatar || 'default';
     const radioToCheck = document.querySelector(`input[name="avatar"][value="${currentAvatar}"]`);

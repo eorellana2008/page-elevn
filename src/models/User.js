@@ -43,24 +43,23 @@ const User = {
         return rows[0];
     },
 
-    // Usado en Registro y Crear Admin
     create: async (userData) => {
-        const { username, email, password_hash, role_id, municipality_id } = userData;
+        const { username, email, password_hash, role_id, country_id } = userData;
         const query = `
-            INSERT INTO users (username, email, password_hash, role_id, municipality_id)
-            VALUES (?, ?, ?, ?, ?)
-        `;
-        return await pool.query(query, [username, email, password_hash, role_id, municipality_id]);
+        INSERT INTO users (username, email, password_hash, role_id, country_id)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+        return await pool.query(query, [username, email, password_hash, role_id, country_id]);
     },
 
     // Usado en Admin Panel
     getAllDetailed: async () => {
         const query = `
-            SELECT u.user_id, u.username, u.email, m.name as municipality, 
-                   d.name as department, r.name as role 
+            SELECT u.user_id, u.username, u.email, 
+                   c.name as country_name, c.code as country_code,
+                   r.name as role 
             FROM users u 
-            LEFT JOIN municipalities m ON u.municipality_id = m.municipality_id 
-            LEFT JOIN departments d ON m.department_id = d.department_id 
+            LEFT JOIN countries c ON u.country_id = c.country_id
             JOIN roles r ON u.role_id = r.role_id 
             ORDER BY u.user_id ASC
         `;
@@ -70,16 +69,16 @@ const User = {
 
     findById: async (id) => {
         const query = `
-            SELECT u.user_id, u.username, u.email, u.created_at, 
-                   u.password_hash, u.avatar, u.municipality_id, /* <--- AGREGADO */
-                   m.name as municipality, d.name as department, r.name as role,
-                   (SELECT COALESCE(SUM(points), 0) FROM predictions WHERE user_id = u.user_id) as total_points
-            FROM users u
-            LEFT JOIN municipalities m ON u.municipality_id = m.municipality_id
-            LEFT JOIN departments d ON m.department_id = d.department_id
-            JOIN roles r ON u.role_id = r.role_id
-            WHERE u.user_id = ?
-        `;
+        SELECT u.user_id, u.username, u.email, u.created_at, 
+               u.password_hash, u.avatar, u.country_id,
+               c.name as country_name, c.code as country_code,
+               r.name as role,
+               (SELECT COALESCE(SUM(points), 0) FROM predictions WHERE user_id = u.user_id) as total_points
+        FROM users u
+        LEFT JOIN countries c ON u.country_id = c.country_id
+        JOIN roles r ON u.role_id = r.role_id
+        WHERE u.user_id = ?
+    `;
         const [rows] = await pool.query(query, [id]);
         return rows[0];
     },
@@ -127,9 +126,9 @@ const User = {
         return rows[0];
     },
 
-    updateBasicInfo: async (id, username, email, avatar, municipality_id) => {
-        const query = 'UPDATE users SET username = ?, email = ?, avatar = ?, municipality_id = ? WHERE user_id = ?';
-        return await pool.query(query, [username, email, avatar, municipality_id, id]);
+    updateBasicInfo: async (id, username, email, avatar, country_id) => {
+        const query = 'UPDATE users SET username = ?, email = ?, avatar = ?, country_id = ? WHERE user_id = ?';
+        return await pool.query(query, [username, email, avatar, country_id, id]);
     },
 };
 

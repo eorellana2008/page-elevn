@@ -28,7 +28,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('profileName').textContent = user.username;
         document.getElementById('profileEmail').textContent = user.email;
         document.getElementById('profileRole').textContent = user.role.toUpperCase();
-        document.getElementById('profileLocation').textContent = `${user.municipality || 'N/A'}, ${user.department || ''}`;
+
+        // --- CORRECCIÓN V5: Usar País  ---
+        const locationText = user.country_name ? `${user.country_name} (${user.country_code})` : 'Sin ubicación';
+        document.getElementById('profileLocation').textContent = locationText;
+
         document.getElementById('profilePoints').textContent = user.total_points;
 
         // Renderizar Avatar

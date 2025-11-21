@@ -33,20 +33,20 @@ const getProfile = async (req, res) => {
     }
 };
 
-// EDITAR MI PERFIL (Usuario se edita a sí mismo)
+// EDITAR MI INFO (user normal)
 const updateMyProfile = async (req, res) => {
     const userId = req.user.userId;
-    const { username, email, avatar, municipality_id } = req.body;
+    const { username, email, avatar, country_id } = req.body;
 
-    if (!username || !email || !municipality_id) {
+    if (!username || !email || !country_id) {
         return res.status(400).json({ error: 'Faltan datos obligatorios.' });
     }
 
     try {
         const safeAvatar = avatar || 'default';
-        const safeMuni = parseInt(municipality_id);
+        const safeCountry = parseInt(country_id);
         
-        await User.updateBasicInfo(userId, username, email, safeAvatar, safeMuni);
+        await User.updateBasicInfo(userId, username, email, safeAvatar, safeCountry);
         res.json({ message: 'Perfil actualizado correctamente.' });
 
     } catch (error) {
