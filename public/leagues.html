@@ -81,6 +81,20 @@
         </div>
     </div>
 
+    <div id="modalManageMatches" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 id="manageTitle"><i class="ri-settings-3-line"></i> Gestionar Jornada</h2>
+            <p class="modal-help-text">Agrega los partidos que valdrán puntos en esta liga.</p>
+            
+            <div id="manageMatchesContainer" style="max-height: 400px; overflow-y: auto;">
+                </div>
+
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="toggleModal('modalManageMatches', false)" style="width:100%;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/api/api.js"></script>
     <script src="js/utils/ui.js"></script>
     <script src="js/main.js"></script>

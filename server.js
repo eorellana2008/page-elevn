@@ -18,15 +18,16 @@ app.use('/api/matches', require('./src/routes/matchRoutes'));
 app.use('/api/predictions', require('./src/routes/predictionRoutes'));
 app.use('/api/requests', require('./src/routes/requestRoutes'));
 app.use('/api/leagues', require('./src/routes/leagueRoutes'));
+app.use('/api/competitions', require('./src/routes/competitionRoutes'));
 
 // Test DB
 db.getConnection()
     .then(conn => {
-        console.log(`✅ MySQL Conectado ID: ${conn.threadId}`);
+        console.log(`MySQL Conectado ID: ${conn.threadId}`);
         conn.release();
     })
-    .catch(err => console.error('❌ Error DB:', err));
+    .catch(err => console.error('Error DB:', err));
 
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

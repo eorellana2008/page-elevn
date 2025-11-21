@@ -1,8 +1,22 @@
 const pool = require('../../db/connection');
 
 const Match = {
-    getAll: async () => {
-        const [rows] = await pool.query('SELECT * FROM matches ORDER BY match_date ASC');
+    getAll: async (competitionId = null) => {
+        let query = `
+            SELECT m.*, c.name as competition_name 
+            FROM matches m
+            LEFT JOIN competitions c ON m.competition_id = c.competition_id
+        `;
+        const params = [];
+
+        if (competitionId) {
+            query += ' WHERE m.competition_id = ?';
+            params.push(competitionId);
+        }
+
+        query += ' ORDER BY m.match_date ASC';
+
+        const [rows] = await pool.query(query, params);
         return rows;
     },
 
@@ -12,19 +26,21 @@ const Match = {
     },
 
     create: async (data) => {
-        const { team_home, team_away, match_date } = data;
-        const query = 'INSERT INTO matches (team_home, team_away, match_date) VALUES (?, ?, ?)';
-        return await pool.query(query, [team_home, team_away, match_date]);
+        const { team_home, team_away, match_date, competition_id } = data;
+        const query = 'INSERT INTO matches (team_home, team_away, match_date, competition_id) VALUES (?, ?, ?, ?)';
+        const compId = competition_id ? parseInt(competition_id) : null;
+        return await pool.query(query, [team_home, team_away, match_date, compId]);
     },
 
     updateDetails: async (id, data) => {
-        const { team_home, team_away, match_date } = data;
+        const { team_home, team_away, match_date, competition_id } = data;
         const query = `
             UPDATE matches 
-            SET team_home = ?, team_away = ?, match_date = ? 
+            SET team_home = ?, team_away = ?, match_date = ?, competition_id = ?
             WHERE match_id = ?
         `;
-        return await pool.query(query, [team_home, team_away, match_date, id]);
+        const compId = competition_id ? parseInt(competition_id) : null;
+        return await pool.query(query, [team_home, team_away, match_date, compId, id]);
     },
 
     updateScore: async (id, homeScore, awayScore) => {

@@ -78,6 +78,7 @@
                     <thead>
                         <tr>
                             <th>Fecha</th>
+                            <th>Torneo</th>
                             <th class="text-center">Local</th>
                             <th>VS</th>
                             <th class="text-center">Visitante</th>
@@ -197,6 +198,10 @@
         <div class="modal-content">
             <h2><i class="ri-football-line"></i> Crear Partido</h2>
             <form id="formMatch">
+                <select id="match_competition" required>
+                    <option value="">Cargando...</option>
+                </select>
+
                 <label>Local:</label> <input type="text" id="team_home" required>
                 <label>Visitante:</label> <input type="text" id="team_away" required>
                 <label>Fecha y Hora:</label> <input type="datetime-local" id="match_date" required>
@@ -215,9 +220,16 @@
             <h2><i class="ri-edit-line"></i> Editar Partido</h2>
             <form id="formEditMatch">
                 <input type="hidden" id="edit_match_id">
+
+                <label>Competición:</label>
+                <select id="edit_match_competition" required>
+                    <option value="">Cargando...</option>
+                </select>
+
                 <label>Local:</label> <input type="text" id="edit_team_home" required>
                 <label>Visitante:</label> <input type="text" id="edit_team_away" required>
                 <label>Fecha:</label> <input type="datetime-local" id="edit_match_date" required>
+
                 <div class="modal-buttons">
                     <button type="button" class="btn-cancel"
                         onclick="toggleModal('modalEditMatch', false)">Cancelar</button>

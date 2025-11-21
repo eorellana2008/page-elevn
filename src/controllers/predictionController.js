@@ -1,6 +1,7 @@
 const Prediction = require('../models/Prediction');
 const Match = require('../models/Match');
 
+// Guardar Predicción GLOBAL (Juego principal)
 const savePrediction = async (req, res) => {
     const userId = req.user.userId;
     const { match_id, pred_home, pred_away } = req.body;
@@ -15,21 +16,20 @@ const savePrediction = async (req, res) => {
         if (!match) return res.status(404).json({ error: 'Partido no existe' });
 
         if (match.status === 'finished') {
-            return res.status(400).json({ error: 'El partido ya terminó, no puedes ingresar el posible marcador.' });
+            return res.status(400).json({ error: 'El partido ya terminó.' });
         }
 
         const now = new Date();
         const matchDate = new Date(match.match_date);
 
-        // Si la hora actual es mayor o igual a la del partido, bloqueamos.
         if (now >= matchDate) {
             return res.status(400).json({ error: '⏳ El partido ya comenzó. Predicciones cerradas.' });
         }
 
-        // Guardar predicción
+        // Guardar en tabla GLOBAL
         await Prediction.save(userId, match_id, pred_home, pred_away);
 
-        res.json({ message: 'Pronóstico guardado' });
+        res.json({ message: 'Pronóstico global guardado' });
 
     } catch (error) {
         console.error(error);
