@@ -11,17 +11,17 @@
     --border: #333333;
     /* Bordes sutiles */
     --text-main: #EAEAEA;
-    /* Texto blanco suave (no puro) */
+    /* Texto blanco suave */
     --text-muted: #888888;
     /* Texto secundario */
     --accent: #4FD1C5;
-    /* Un solo color de acento (Teal suave) */
+    /* Teal suave */
     --danger: #FC8181;
-    /* Rojo suave para errores */
+    /* Rojo suave */
     --success: #68D391;
-    /* Verde suave para éxitos */
+    /* Verde suave */
     --radius: 8px;
-    /* Bordes redondeados uniformes */
+    /* Bordes redondeados */
 }
 
 * {
@@ -32,6 +32,7 @@
     -webkit-font-smoothing: antialiased;
 }
 
+/* CORRECCIÓN DE CENTRADO AQUÍ */
 body {
     background-color: var(--bg-body);
     color: var(--text-main);
@@ -39,8 +40,11 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    /* Ocupa toda la altura de la ventana */
+    margin: 0;
+    /* Sin márgenes por defecto */
     padding: 20px;
-    line-height: 1.6;
+    /* Un poco de aire en móviles */
 }
 
 /* =========================================
@@ -54,6 +58,8 @@ body {
     width: 100%;
     max-width: 500px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    /* Asegura que no se estire de más */
+    margin: auto;
 }
 
 /* Ajuste específico para que las tablas quepan bien */
@@ -100,7 +106,6 @@ select,
 textarea {
     width: 100%;
     padding: 10px 15px;
-    /* Ajustado para coincidir mejor visualmente */
     margin-bottom: 20px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -108,7 +113,6 @@ textarea {
     color: var(--text-main);
     font-size: 0.95em;
     transition: border-color 0.2s;
-    /* Altura fija para inputs de texto para alinearse con botones si están al lado */
     min-height: 42px;
 }
 
@@ -122,17 +126,13 @@ textarea:focus {
 
 select option {
     background-color: var(--bg-card);
-    /* Fondo oscuro (Gris #1A1A1A) */
     color: var(--text-main);
-    /* Texto claro */
     padding: 10px;
-    /* Espaciado (funciona en Firefox, ignorado en Chrome) */
 }
 
 /* =========================================
-   4. BOTONES UNIFICADOS (SIMÉTRICOS)
+   4. BOTONES UNIFICADOS
    ========================================= */
-/* Estilo Base para TODOS los botones */
 button,
 .btn-save,
 .nav-btn,
@@ -152,26 +152,19 @@ button,
     gap: 8px;
     transition: all 0.2s ease;
     text-decoration: none;
-    /* Para enlaces con clase de botón */
-
-    /* DIMENSIONES FIJAS PARA EVITAR EL TOC */
     padding: 0 20px;
-    /* Padding lateral igual */
     height: 42px;
-    /* Altura fija idéntica para todos */
     margin-top: 0;
     border: 1px solid transparent;
-    /* Borde base transparente */
 }
 
-/* Botones de Acción Principal (Sólidos) */
+/* Botones de Acción Principal */
 button[type="submit"],
 .btn-save,
 .nav-btn {
     background-color: var(--accent);
     color: #111;
     border-color: var(--accent);
-    /* Borde del mismo color para mantener tamaño */
 }
 
 button[type="submit"]:hover,
@@ -181,7 +174,7 @@ button[type="submit"]:hover,
     transform: translateY(-1px);
 }
 
-/* Botones Secundarios / Outline (Bordeados) */
+/* Botones Secundarios */
 .btn-cancel,
 .logout-btn,
 .btn-change-pass {
@@ -198,19 +191,16 @@ button[type="submit"]:hover,
     background: var(--bg-input);
 }
 
-/* Excepción: Botones en formularios deben llenar el ancho */
 form button[type="submit"],
 .modal-buttons button {
     width: 100%;
     margin-top: 10px;
 }
 
-/* Ajuste para los botones del Header en Admin (No estirados) */
 .admin-header-buttons .nav-btn,
 .admin-header-buttons .logout-btn {
     width: auto;
     min-width: 120px;
-    /* Ancho mínimo uniforme */
 }
 
 /* =========================================
@@ -276,7 +266,6 @@ form button[type="submit"],
     display: flex;
     align-items: center;
     z-index: 10;
-    /* Centrar icono verticalmente */
 }
 
 /* =========================================
@@ -294,9 +283,7 @@ form button[type="submit"],
     border-radius: var(--radius);
     padding: 0;
     overflow: hidden;
-    /* Recorta las esquinas de la tabla */
     overflow-x: auto;
-    /* Scroll si la tabla es muy ancha */
 }
 
 table {
@@ -346,7 +333,6 @@ tbody tr:hover {
     font-size: 0.85em;
 }
 
-/* Botones Pequeños de Acción (Iconos en Tabla) */
 .action-btn {
     border: none;
     background: transparent;
@@ -359,7 +345,6 @@ tbody tr:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* Reset de estilos de botón grande */
     height: auto;
     width: auto;
     margin: 0;
@@ -386,7 +371,6 @@ tbody tr:hover {
     margin-bottom: 25px;
     border-bottom: 1px solid var(--border);
     gap: 0;
-    /* Los tabs van pegados */
 }
 
 .tab-btn {
@@ -396,7 +380,6 @@ tbody tr:hover {
     color: var(--text-muted);
     padding: 0 20px;
     height: 45px;
-    /* Altura específica para tabs */
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s;
@@ -425,7 +408,7 @@ tbody tr:hover {
 }
 
 /* =========================================
-   8. MODALES (CLEAN)
+   8. MODALES
    ========================================= */
 .modal-overlay {
     position: fixed;
@@ -457,6 +440,9 @@ tbody tr:hover {
     max-width: 400px;
     border: 1px solid var(--border);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    /* Ajuste para scroll en pantallas pequeñas */
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-content h2 {
@@ -475,7 +461,6 @@ tbody tr:hover {
     margin-top: 25px;
 }
 
-/* Textarea específico */
 #modalSupport textarea,
 #modalResponse textarea {
     min-height: 100px;
@@ -550,76 +535,182 @@ tbody tr:hover {
 }
 
 /* =========================================
-   10. QUINIELA CARDS
+   10. QUINIELA 2.0 (REWORK VISUAL)
    ========================================= */
+
+/* Grilla de partidos */
 .matches-grid {
     display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
+/* Tarjeta Principal más limpia */
 .match-card {
-    background: var(--bg-card);
+    background: linear-gradient(145deg, #1e1e1e, #161616);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    text-align: center;
-    transition: border-color 0.2s;
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
 }
 
 .match-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     border-color: var(--accent);
 }
 
-.teams-row {
+/* Cabecera de la tarjeta */
+.match-header {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 1.1em;
-    font-weight: 600;
-    margin: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.75em;
+    color: var(--text-muted);
 }
 
-.vs-badge {
-    color: var(--text-muted);
-    font-size: 0.8em;
-    font-weight: 400;
-    background: var(--bg-input);
+.tournament-badge {
+    background: var(--accent);
+    color: #000;
     padding: 2px 8px;
     border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.85em;
+    text-transform: uppercase;
 }
 
-.prediction-box {
-    background: var(--bg-input);
-    padding: 10px;
-    border-radius: var(--radius);
+/* Cuerpo del enfrentamiento */
+.match-body {
+    padding: 20px;
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.teams-display {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
-.pred-input {
-    width: 45px;
-    height: 45px;
-    font-size: 1.3em;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    margin-bottom: 0;
-    padding: 5px;
+.team-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40%;
     text-align: center;
+    gap: 8px;
+}
+
+/* Escudos generados */
+.team-avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: var(--bg-input);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.6em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.team-name {
+    font-size: 0.9em;
+    font-weight: 600;
+    line-height: 1.2;
     color: var(--text-main);
 }
 
-.final-score {
-    font-size: 1.5em;
-    color: var(--accent);
-    font-weight: bold;
-    margin-bottom: 5px;
+.vs-divider {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    font-weight: 900;
+    opacity: 0.3;
 }
 
-/* ARREGLOS MODAL MARCADOR */
+/* Inputs estilo "Marcador" */
+.score-inputs-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.score-input-modern {
+    width: 65px;
+    height: 65px;
+    background: var(--bg-input);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--accent);
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.score-input-modern:focus {
+    border-color: var(--accent);
+    background: rgba(79, 209, 197, 0.05);
+    outline: none;
+    transform: scale(1.05);
+}
+
+.score-input-modern::placeholder {
+    color: rgba(255, 255, 255, 0.1);
+}
+
+/* Botón de guardar integrado */
+.btn-predict {
+    width: 100%;
+    padding: 15px;
+    background: var(--bg-input);
+    border-top: 1px solid var(--border);
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 0 0 16px 16px;
+}
+
+.btn-predict:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.status-closed {
+    text-align: center;
+    padding: 10px;
+    background: rgba(255, 215, 0, 0.05);
+    color: #FFD700;
+    font-size: 0.85em;
+    font-weight: 600;
+    border-top: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.final-result-display {
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: 3px;
+    margin: 10px 0;
+}
+
+/* Estilos para Modales Admin (se mantienen) */
 .score-container {
     display: flex;
     justify-content: center;
@@ -641,10 +732,6 @@ tbody tr:hover {
     border: 2px solid var(--border) !important;
     color: var(--accent) !important;
     border-radius: 10px;
-}
-
-.input-score:focus {
-    border-color: var(--accent) !important;
 }
 
 .score-separator {
@@ -692,7 +779,6 @@ tbody tr:hover {
 /* Selector de Avatares */
 .avatar-option input {
     display: none;
-    /* Ocultar el radio button real */
 }
 
 .icon-box {
@@ -710,11 +796,9 @@ tbody tr:hover {
     transition: all 0.2s;
 }
 
-/* Cuando el input está marcado (checked), cambiar estilo del icon-box */
 .avatar-option input:checked+.icon-box {
     border-color: var(--accent);
     background: rgba(79, 209, 197, 0.1);
-    /* Fondo verde suave */
     color: var(--accent);
     transform: scale(1.1);
 }

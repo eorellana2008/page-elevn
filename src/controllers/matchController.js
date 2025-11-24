@@ -1,6 +1,6 @@
 const Match = require('../models/Match');
-const Prediction = require('../models/Prediction'); // Modelo Global
-const League = require('../models/League');         // Modelo Privado
+const Prediction = require('../models/Prediction');
+const League = require('../models/League');
 
 // OBTENER TODOS
 const getMatches = async (req, res) => {
@@ -16,12 +16,13 @@ const getMatches = async (req, res) => {
 
 // CREAR (Admin)
 const createMatch = async (req, res) => {
-    const { team_home, team_away, match_date, competition_id } = req.body;
+    // Recibimos match_round
+    const { team_home, team_away, match_date, competition_id, match_round } = req.body;
 
     if (!team_home || !team_away || !match_date) return res.status(400).json({ error: 'Faltan datos básicos' });
 
     try {
-        await Match.create({ team_home, team_away, match_date, competition_id });
+        await Match.create({ team_home, team_away, match_date, competition_id, match_round });
         res.status(201).json({ message: 'Partido creado exitosamente' });
     } catch (error) {
         res.status(500).json({ error: 'Error al crear partido' });
@@ -31,17 +32,17 @@ const createMatch = async (req, res) => {
 // EDITAR DATOS (Admin)
 const updateMatchDetails = async (req, res) => {
     const { id } = req.params;
-    const { team_home, team_away, match_date, competition_id } = req.body;
-    
+    const { team_home, team_away, match_date, competition_id, match_round } = req.body;
+
     try {
-        await Match.updateDetails(id, { team_home, team_away, match_date, competition_id });
+        await Match.updateDetails(id, { team_home, team_away, match_date, competition_id, match_round });
         res.json({ message: 'Datos actualizados' });
     } catch (error) {
         res.status(500).json({ error: 'Error al actualizar' });
     }
 };
 
-// ELIMINAR (Admin)
+// ... (deleteMatch y updateMatchScore se mantienen IGUAL que antes) ...
 const deleteMatch = async (req, res) => {
     const { id } = req.params;
     try {
@@ -52,20 +53,15 @@ const deleteMatch = async (req, res) => {
     }
 };
 
-// ==========================================
-// ACTUALIZAR RESULTADO Y REPARTIR PUNTOS (DOBLE TABLA)
-// ==========================================
 const updateMatchScore = async (req, res) => {
     const { id } = req.params;
     const score_home = parseInt(req.body.score_home);
     const score_away = parseInt(req.body.score_away);
 
     try {
-        // 1. Actualizar el partido en DB (Marcador real)
         await Match.updateScore(id, score_home, score_away);
 
-        // 2. Repartir Puntos GLOBAL (Tabla predictions)
-        // ---------------------------------------------------
+        // Repartir Puntos GLOBAL
         const preds = await Prediction.getByMatch(id);
         const globalUpdates = preds.map(async (p) => {
             let puntos = 0;
@@ -73,19 +69,20 @@ const updateMatchScore = async (req, res) => {
             const predAway = parseInt(p.pred_away);
 
             if (predHome === score_home && predAway === score_away) {
-                puntos = 3; // Pleno
+                puntos = 3;
             } else {
                 const realWinner = Math.sign(score_home - score_away);
                 const predWinner = Math.sign(predHome - predAway);
-                if (realWinner === predWinner) puntos = 1; // Ganador/Empate
+                if (realWinner === predWinner) puntos = 1;
             }
             await Prediction.updatePoints(p.prediction_id, puntos);
         });
         await Promise.all(globalUpdates);
 
+        // Repartir Puntos LIGAS
         await League.updatePoints(id, score_home, score_away);
 
-        res.json({ message: 'Marcador actualizado. Puntos calculados para Global y Ligas Privadas.' });
+        res.json({ message: 'Marcador actualizado.' });
 
     } catch (error) {
         console.error(error);

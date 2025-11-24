@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const matchesBody = document.querySelector('#matchesTable tbody');
-    
+
     // 1. CARGAR SELECTORES DE COMPETICIONES
     await cargarCompeticionesSelects();
 
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <td>
                             <div style="display: flex; gap: 5px;">
                                 <button class="action-btn btn-edit" title="Editar Datos" 
-                                    onclick="abrirModalEditMatch('${match.match_id}', '${match.team_home}', '${match.team_away}', '${isoDate}', '${match.competition_id || ''}')">
+                                    onclick="abrirModalEditMatch('${match.match_id}', '${match.team_home}', '${match.team_away}', '${isoDate}', '${match.competition_id || ''}', '${match.match_round || ''}')">
                                     <i class="ri-pencil-line"></i>
                                 </button>
 
@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) { console.error(e); }
     }
 
-    // 3. CREAR PARTIDO
     const formMatch = document.getElementById('formMatch');
     if (formMatch) {
         formMatch.addEventListener('submit', async (e) => {
@@ -65,15 +64,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 team_home: document.getElementById('team_home').value,
                 team_away: document.getElementById('team_away').value,
                 match_date: document.getElementById('match_date').value,
-                competition_id: document.getElementById('match_competition').value // <--- NUEVO
+                competition_id: document.getElementById('match_competition').value,
+                match_round: document.getElementById('match_round').value // <--- NUEVO
             };
-            
+
             try {
                 const res = await api.createMatch(data);
-                if (res.message) {
-                    alert('Partido creado');
-                    location.reload();
-                } else { alert('Error: ' + (res.error || 'No se pudo crear')); }
+                if (res.message) { location.reload(); }
+                else { alert('Error: ' + (res.error || 'No se pudo crear')); }
             } catch (e) { alert('Error de conexión'); }
         });
     }
@@ -88,19 +86,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 team_home: document.getElementById('edit_team_home').value,
                 team_away: document.getElementById('edit_team_away').value,
                 match_date: document.getElementById('edit_match_date').value,
-                competition_id: document.getElementById('edit_match_competition').value // <--- NUEVO
+                competition_id: document.getElementById('edit_match_competition').value,
+                match_round: document.getElementById('edit_match_round').value // <--- NUEVO
             };
-            
+
             try {
                 const res = await api.updateMatch(id, data);
-                if (res.message) {
-                    alert('Partido actualizado');
-                    location.reload();
-                } else { alert('Error: ' + (res.error || 'No se pudo actualizar')); }
+                if (res.message) { location.reload(); }
+                else { alert('Error: ' + (res.error || 'No se pudo actualizar')); }
             } catch (e) { alert('Error de conexión'); }
         });
     }
-
     // 5. PONER GOLES (Se mantiene igual)
     const formScore = document.getElementById('formScore');
     if (formScore) {
@@ -128,25 +124,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function cargarCompeticionesSelects() {
     try {
         const comps = await api.getCompetitions();
-        const options = '<option value="">-- Amistoso / Ninguna --</option>' + 
+        const options = '<option value="">-- Amistoso / Ninguna --</option>' +
             comps.map(c => `<option value="${c.competition_id}">${c.name}</option>`).join('');
-        
+
         const s1 = document.getElementById('match_competition');
         const s2 = document.getElementById('edit_match_competition');
-        if(s1) s1.innerHTML = options;
-        if(s2) s2.innerHTML = options;
+        if (s1) s1.innerHTML = options;
+        if (s2) s2.innerHTML = options;
     } catch (e) { console.error("Error cargando competiciones"); }
 }
 
 window.abrirModalMatch = () => window.toggleModal('modalMatch', true);
 
 // Actualizado para recibir compId
-window.abrirModalEditMatch = (id, home, away, date, compId) => {
+window.abrirModalEditMatch = (id, home, away, date, compId, round) => { // <--- Recibe round
     document.getElementById('edit_match_id').value = id;
     document.getElementById('edit_team_home').value = home;
     document.getElementById('edit_team_away').value = away;
     document.getElementById('edit_match_date').value = date;
-    document.getElementById('edit_match_competition').value = compId; // Preseleccionar
+    document.getElementById('edit_match_competition').value = compId;
+    document.getElementById('edit_match_round').value = round || ''; // <--- Asigna round
     window.toggleModal('modalEditMatch', true);
 };
 

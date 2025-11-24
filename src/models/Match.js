@@ -1,6 +1,7 @@
 const pool = require('../../db/connection');
 
 const Match = {
+    // Obtener partidos (Ahora incluye match_round)
     getAll: async (competitionId = null) => {
         let query = `
             SELECT m.*, c.name as competition_name 
@@ -25,22 +26,24 @@ const Match = {
         return rows[0];
     },
 
+    // CREAR: Añadimos match_round
     create: async (data) => {
-        const { team_home, team_away, match_date, competition_id } = data;
-        const query = 'INSERT INTO matches (team_home, team_away, match_date, competition_id) VALUES (?, ?, ?, ?)';
+        const { team_home, team_away, match_date, competition_id, match_round } = data;
+        const query = 'INSERT INTO matches (team_home, team_away, match_date, competition_id, match_round) VALUES (?, ?, ?, ?, ?)';
         const compId = competition_id ? parseInt(competition_id) : null;
-        return await pool.query(query, [team_home, team_away, match_date, compId]);
+        return await pool.query(query, [team_home, team_away, match_date, compId, match_round]);
     },
 
+    // ACTUALIZAR: Añadimos match_round
     updateDetails: async (id, data) => {
-        const { team_home, team_away, match_date, competition_id } = data;
+        const { team_home, team_away, match_date, competition_id, match_round } = data;
         const query = `
             UPDATE matches 
-            SET team_home = ?, team_away = ?, match_date = ?, competition_id = ?
+            SET team_home = ?, team_away = ?, match_date = ?, competition_id = ?, match_round = ?
             WHERE match_id = ?
         `;
         const compId = competition_id ? parseInt(competition_id) : null;
-        return await pool.query(query, [team_home, team_away, match_date, compId, id]);
+        return await pool.query(query, [team_home, team_away, match_date, compId, match_round, id]);
     },
 
     updateScore: async (id, homeScore, awayScore) => {

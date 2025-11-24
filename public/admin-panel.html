@@ -192,8 +192,6 @@
             </form>
         </div>
     </div>
-
-    <!-- Modal Match -->
     <div id="modalMatch" class="modal-overlay hidden">
         <div class="modal-content">
             <h2><i class="ri-football-line"></i> Crear Partido</h2>
@@ -201,6 +199,9 @@
                 <select id="match_competition" required>
                     <option value="">Cargando...</option>
                 </select>
+
+                <label>Fase / Jornada:</label>
+                <input type="text" id="match_round" placeholder="Ej: Jornada 10, 4tos de Final...">
 
                 <label>Local:</label> <input type="text" id="team_home" required>
                 <label>Visitante:</label> <input type="text" id="team_away" required>
@@ -214,7 +215,6 @@
         </div>
     </div>
 
-    <!-- Modal Edit Match -->
     <div id="modalEditMatch" class="modal-overlay hidden">
         <div class="modal-content">
             <h2><i class="ri-edit-line"></i> Editar Partido</h2>
@@ -225,6 +225,9 @@
                 <select id="edit_match_competition" required>
                     <option value="">Cargando...</option>
                 </select>
+
+                <label>Fase / Jornada:</label>
+                <input type="text" id="edit_match_round" placeholder="Ej: Final">
 
                 <label>Local:</label> <input type="text" id="edit_team_home" required>
                 <label>Visitante:</label> <input type="text" id="edit_team_away" required>

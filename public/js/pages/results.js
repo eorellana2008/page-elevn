@@ -1,9 +1,20 @@
 // ==========================================
-// ESTADO DE LA APLICACIÓN (Contexto)
+// ESTADO DE LA APLICACIÓN
 // ==========================================
 let currentContext = 'global'; // 'global', 'competition', 'league'
-let currentId = null;          // ID de la competición o de la liga
-let currentUserLeagues = [];   // Para guardar info de mis ligas
+let currentId = null;
+let currentUserLeagues = [];
+const ID_MUNDIAL_HISTORICO = 1; // Para excluirlo de las pestañas activas
+
+// ==========================================
+// HELPER: COLORES ESCUDOS (Visual)
+// ==========================================
+function getAvatarColor(name) {
+    const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#1A535C', '#FF9F1C', '#2EC4B6', '#6A0572', '#AB83A1'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Verificar Sesión
@@ -12,52 +23,62 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 2. Renderizar Pestañas (Global + Ligas Privadas)
+    // 2. Cargar Pestañas y Quiniela Inicial
     await renderTabs();
-
-    // 3. Cargar datos iniciales
     cargarQuiniela();
 });
 
 // ==========================================
-// LÓGICA DE PESTAÑAS
+// PESTAÑAS DINÁMICAS
 // ==========================================
 async function renderTabs() {
     const container = document.getElementById('tabsContainer');
-    if (!container) return; // Si no agregaste el div en el HTML aún
+    if (!container) return;
 
     try {
+        // 1. Obtener Mis Ligas Privadas
         currentUserLeagues = await api.getMyLeagues();
-    } catch (e) {
-        console.error("Error cargando ligas:", e);
-    }
+        // 2. Obtener Competiciones Públicas (Champions, Premier, etc.)
+        const allComps = await api.getCompetitions();
 
-    let html = `
-        <button class="filter-chip active" onclick="cambiarContexto('global', null, this)">
-            🌎 Global
-        </button>
-        <button class="filter-chip" onclick="cambiarContexto('competition', 1, this)">
-            🏆 Mundial Histórico
-        </button>
-        <div style="width:1px; background:#333; margin:0 5px;"></div>
-    `;
+        let html = `
+            <button class="filter-chip active" onclick="cambiarContexto('global', null, this)">
+                🌎 Global
+            </button>
+        `;
 
-    if (currentUserLeagues.length > 0) {
-        currentUserLeagues.forEach(l => {
-            html += `
-                <button class="filter-chip" onclick="cambiarContexto('league', ${l.league_id}, this)">
-                    🔒 ${l.name}
-                </button>`;
-        });
-    } else {
-        html += `<span style="font-size:0.8em; color:#666; padding:5px;">Sin ligas privadas</span>`;
-    }
+        // AGREGAR COMPETICIONES PÚBLICAS (Excluyendo Mundial Histórico)
+        if (allComps && allComps.length > 0) {
+            allComps.forEach(c => {
+                if (c.competition_id !== ID_MUNDIAL_HISTORICO) {
+                    html += `
+                    <button class="filter-chip" onclick="cambiarContexto('competition', ${c.competition_id}, this)">
+                        🏆 ${c.name}
+                    </button>`;
+                }
+            });
+        }
 
-    container.innerHTML = html;
+        html += `<div style="width:1px; background:#333; margin:0 5px;"></div>`;
+
+        // AGREGAR LIGAS PRIVADAS
+        if (currentUserLeagues.length > 0) {
+            currentUserLeagues.forEach(l => {
+                html += `
+                    <button class="filter-chip" onclick="cambiarContexto('league', ${l.league_id}, this)">
+                        🔒 ${l.name}
+                    </button>`;
+            });
+        } else {
+            html += `<span style="font-size:0.8em; color:#666; padding:5px;">Sin ligas privadas</span>`;
+        }
+
+        container.innerHTML = html;
+    } catch (e) { console.error(e); }
 }
 
 window.cambiarContexto = (type, id, btn) => {
-    // Actualizar estilo visual
+    // Actualizar estilo visual de botones
     document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
 
@@ -70,7 +91,7 @@ window.cambiarContexto = (type, id, btn) => {
 };
 
 // ==========================================
-// CARGA DE PARTIDOS Y PREDICCIONES
+// CARGA DE PARTIDOS (Visual 2.0)
 // ==========================================
 async function cargarQuiniela() {
     const container = document.getElementById('matchesContainer');
@@ -80,7 +101,7 @@ async function cargarQuiniela() {
         let matches = [];
         let myPreds = [];
 
-        // --- 1. DECIDIR QUÉ API LLAMAR SEGÚN CONTEXTO ---
+        // --- DECIDIR API SEGÚN CONTEXTO ---
         if (currentContext === 'league') {
             // MODO LIGA PRIVADA
             [matches, myPreds] = await Promise.all([
@@ -88,24 +109,22 @@ async function cargarQuiniela() {
                 api.getLeagueMyPredictions(currentId)
             ]);
         } else {
-            // MODO GLOBAL (O FILTRO COMPETICIÓN)
-            // Si es 'competition', pasamos el ID como filtro
+            // MODO GLOBAL O COMPETICIÓN
             const compFilter = currentContext === 'competition' ? currentId : null;
-            
             [matches, myPreds] = await Promise.all([
                 api.getMatches(compFilter),
                 api.getMyPredictions()
             ]);
         }
 
-        // --- 2. RENDERIZADO ---
+        // --- RENDERIZADO ---
         container.innerHTML = '';
 
         if (!matches || matches.length === 0) {
             container.innerHTML = `
                 <div style="text-align:center; padding: 40px; color: var(--text-muted);">
                     <i class="ri-ghost-line" style="font-size: 3em; margin-bottom: 10px; display:block; opacity: 0.5;"></i>
-                    <p>No hay partidos activos en esta sección.</p>
+                    <p>No hay partidos en esta sección.</p>
                     ${currentContext === 'league' ? '<small>Pide al administrador de la liga que gestione la jornada.</small>' : ''}
                 </div>`;
             return;
@@ -114,86 +133,115 @@ async function cargarQuiniela() {
         const now = new Date();
 
         matches.forEach(match => {
-            // Buscar mi predicción para este partido
+            // Datos Predicción
             const miPred = myPreds.find(p => p.match_id === match.match_id);
             const homeVal = miPred ? miPred.pred_home : '';
             const awayVal = miPred ? miPred.pred_away : '';
             const pts = miPred ? miPred.points : 0;
 
-            // Datos visuales
+            // Datos Fecha
             const matchDate = new Date(match.match_date);
-            const dateStr = matchDate.toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            const dateStr = matchDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) +
+                ' - ' + matchDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
             const yaEmpezo = now >= matchDate;
-            
-            // Etiqueta de Torneo (Si existe)
-            const torneoTag = match.competition_name 
-                ? `<span style="font-size:0.7em; background:var(--bg-input); padding:2px 6px; border-radius:4px; margin-bottom:5px; display:inline-block; color:#aaa;">${match.competition_name}</span>` 
+
+            // Datos Visuales (Escudos Generados)
+            const homeInitial = match.team_home.charAt(0);
+            const awayInitial = match.team_away.charAt(0);
+            const colorHome = getAvatarColor(match.team_home);
+            const colorAway = getAvatarColor(match.team_away);
+
+            // Info Fase/Jornada (Si existe)
+            const roundInfo = match.match_round
+                ? `<span style="background:var(--bg-input); color:var(--text-main); padding:2px 8px; border-radius:4px; font-size:0.8em; margin-left:5px; font-weight:bold;">${match.match_round}</span>`
                 : '';
 
             const card = document.createElement('div');
             card.className = 'match-card';
 
+            // --- ESTRUCTURA HTML ---
             let contenidoHTML = `
-                ${torneoTag}
-                <div style="font-size:0.8em; color: var(--text-muted); margin-bottom:10px;">${dateStr}</div>
-                <div class="teams-row">
-                    <span style="width:40%; text-align:right;">${match.team_home}</span>
-                    <span class="vs-badge">VS</span>
-                    <span style="width:40%; text-align:left;">${match.team_away}</span>
+                <div class="match-header">
+                    <span><i class="ri-calendar-event-line"></i> ${dateStr}</span>
+                    <div>
+                        ${match.competition_name ? `<span class="tournament-badge">${match.competition_name}</span>` : ''}
+                        ${roundInfo}
+                    </div>
                 </div>
+
+                <div class="match-body">
+                    <div class="teams-display">
+                        <div class="team-item">
+                            <div class="team-avatar" style="border-color: ${colorHome}; color: ${colorHome};">
+                                ${homeInitial}
+                            </div>
+                            <span class="team-name">${match.team_home}</span>
+                        </div>
+
+                        <div class="vs-divider">VS</div>
+
+                        <div class="team-item">
+                            <div class="team-avatar" style="border-color: ${colorAway}; color: ${colorAway};">
+                                ${awayInitial}
+                            </div>
+                            <span class="team-name">${match.team_away}</span>
+                        </div>
+                    </div>
             `;
 
-            // CASO A: Partido Finalizado
+            // --- ESTADOS DEL PARTIDO ---
+
+            // CASO A: FINALIZADO
             if (match.status === 'finished') {
-                let pointsHtml = '';
-                
-                // Solo mostrar puntos si participé
+                let pointsBadge = '';
                 if (miPred) {
-                    if (pts === 3) {
-                        pointsHtml = `<div style="color:#00FFC0; font-weight:bold; font-size:0.9em;"><i class="ri-star-fill"></i> +3 Puntos</div>`;
-                    } else if (pts === 1) {
-                        pointsHtml = `<div style="color:#FFD700; font-weight:bold; font-size:0.9em;"><i class="ri-check-double-line"></i> +1 Punto</div>`;
-                    } else {
-                        pointsHtml = `<div style="color:var(--danger); font-size:0.9em;">0 Puntos</div>`;
-                    }
+                    if (pts === 3) pointsBadge = `<span style="color:#00FFC0; font-size:0.85em; font-weight:bold;">★ +3 Pts (Pleno)</span>`;
+                    else if (pts === 1) pointsBadge = `<span style="color:#FFD700; font-size:0.85em; font-weight:bold;">✓ +1 Pt (Acierto)</span>`;
+                    else pointsBadge = `<span style="color:var(--danger); font-size:0.85em;">✗ 0 Pts</span>`;
                 } else {
-                    pointsHtml = `<div style="color:var(--text-muted); font-size:0.8em;">No jugado</div>`;
+                    pointsBadge = `<span style="color:var(--text-muted); font-size:0.8em;">No jugado</span>`;
                 }
 
                 contenidoHTML += `
-                    <div style="background:var(--bg-input); padding:10px; border-radius:8px; margin-top:10px; border:1px solid var(--border);">
-                        <div style="color:var(--text-muted); font-size:0.75em; text-transform:uppercase;">Resultado Final</div>
-                        <div class="final-score" style="font-size:1.4em; margin:5px 0;">${match.score_home} - ${match.score_away}</div>
-                        <div style="font-size:0.9em; border-top:1px solid #333; padding-top:5px; margin-top:5px;">
-                            <span style="color:#888;">Tú:</span> <strong>${homeVal !== '' ? homeVal : '-'} - ${awayVal !== '' ? awayVal : '-'}</strong>
+                    <div style="text-align:center; margin-top:15px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size:0.7em; color:#666; text-transform:uppercase; letter-spacing:1px;">Resultado Final</div>
+                        <div class="final-result-display">
+                            ${match.score_home} - ${match.score_away}
                         </div>
-                        <div style="margin-top:5px;">${pointsHtml}</div>
-                    </div>`;
+                        <div style="font-size:0.85em; color:var(--text-muted); margin-bottom:5px;">
+                            Tú: <b>${homeVal !== '' ? homeVal : '-'}</b> - <b>${awayVal !== '' ? awayVal : '-'}</b>
+                        </div>
+                        <div>${pointsBadge}</div>
+                    </div>
+                </div>`;
             }
-            // CASO B: Partido En Juego / Tiempo Cumplido (Cerrado)
+            // CASO B: CERRADO (En Juego)
             else if (yaEmpezo) {
                 contenidoHTML += `
-                     <div style="background:rgba(255, 215, 0, 0.05); border:1px solid #555; padding:15px; border-radius:8px; margin-top:10px;">
-                        <div style="color:#FFD700; font-weight:bold; font-size:0.85em; margin-bottom:5px; text-transform:uppercase;">
-                            <i class="ri-lock-line"></i> Cerrado
+                    <div style="text-align:center; margin-top:10px;">
+                        <div class="score-inputs-row" style="opacity:0.7;">
+                            <div class="score-input-modern" style="display:flex; align-items:center; justify-content:center; font-size:1.5em; border-style:dashed; cursor:not-allowed;">
+                                ${homeVal !== '' ? homeVal : '-'}
+                            </div>
+                            <div class="score-input-modern" style="display:flex; align-items:center; justify-content:center; font-size:1.5em; border-style:dashed; cursor:not-allowed;">
+                                ${awayVal !== '' ? awayVal : '-'}
+                            </div>
                         </div>
-                        <div style="color:var(--text-main); font-size:0.9em;">
-                            Tu predicción: <strong>${homeVal !== '' ? homeVal : '-'}</strong> - <strong>${awayVal !== '' ? awayVal : '-'}</strong>
-                        </div>
-                    </div>`;
+                    </div>
+                </div> <div class="status-closed">
+                    <i class="ri-lock-line"></i> Predicciones Cerradas
+                </div>`;
             }
-            // CASO C: Partido Abierto (JUGAR)
+            // CASO C: ABIERTO (Jugar)
             else {
                 contenidoHTML += `
-                    <div class="prediction-box">
-                        <input type="number" class="pred-input" id="p_home_${match.match_id}" value="${homeVal}" min="0" placeholder="-">
-                        <span style="font-weight:bold;">-</span>
-                        <input type="number" class="pred-input" id="p_away_${match.match_id}" value="${awayVal}" min="0" placeholder="-">
+                    <div class="score-inputs-row">
+                        <input type="number" id="p_home_${match.match_id}" value="${homeVal}" class="score-input-modern" placeholder="-" min="0">
+                        <input type="number" id="p_away_${match.match_id}" value="${awayVal}" class="score-input-modern" placeholder="-" min="0">
                     </div>
-                    <button onclick="procesarPrediccion(${match.match_id})" class="nav-btn" 
-                        style="width:100%; margin-top:15px; background:var(--accent); color:#111;">
-                        Guardar ${currentContext === 'league' ? '(Liga)' : ''}
-                    </button>`;
+                </div> <button onclick="procesarPrediccion(${match.match_id})" class="btn-predict">
+                    Guardar ${currentContext === 'league' ? '(Liga)' : ''}
+                </button>`;
             }
 
             card.innerHTML = contenidoHTML;
@@ -217,7 +265,10 @@ window.procesarPrediccion = async (matchId) => {
 
     const btn = document.querySelector(`button[onclick="procesarPrediccion(${matchId})"]`);
     const originalText = btn.innerText;
+    const originalBg = btn.style.background;
+
     btn.innerText = '...';
+    btn.style.background = 'var(--text-muted)';
     btn.disabled = true;
 
     try {
@@ -228,33 +279,36 @@ window.procesarPrediccion = async (matchId) => {
             pred_away: parseInt(pred_away)
         };
 
-        // DECISIÓN CRÍTICA: ¿A DÓNDE LO MANDO?
+        // Lógica Doble Tabla (Privada vs Global)
         if (currentContext === 'league') {
-            // Guardar en Tabla Privada (league_predictions)
             res = await api.saveLeaguePrediction(currentId, data);
         } else {
-            // Guardar en Tabla Global (predictions)
             res = await api.savePrediction(data);
         }
 
         if (res.message) {
-            // Feedback visual sutil
+            // Feedback Visual Éxito
             btn.innerText = '¡Listo!';
             btn.style.background = 'var(--success)';
+            btn.style.color = '#000';
+
             setTimeout(() => {
                 btn.innerText = originalText;
-                btn.style.background = 'var(--accent)';
+                btn.style.background = '';
+                btn.style.color = '';
                 btn.disabled = false;
-            }, 1500);
+            }, 2000);
         } else {
             alert('Error: ' + (res.error || 'No se pudo guardar'));
             btn.innerText = originalText;
+            btn.style.background = originalBg;
             btn.disabled = false;
         }
 
     } catch (e) {
         alert('Error de conexión');
         btn.innerText = originalText;
+        btn.style.background = originalBg;
         btn.disabled = false;
     }
 };
@@ -265,29 +319,25 @@ window.procesarPrediccion = async (matchId) => {
 window.abrirRanking = async () => {
     const modal = document.getElementById('modalRanking');
     const tbody = document.getElementById('rankingBody');
-    const title = modal.querySelector('h2'); // Título del modal
+    const title = modal.querySelector('h2');
 
     modal.classList.remove('hidden');
     tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted);">Calculando posiciones...</td></tr>';
 
     try {
         let data = [];
-        
-        // Si estoy en una liga, muestro SU ranking. Si no, el global.
+
         if (currentContext === 'league') {
-            // Buscar el nombre de la liga actual para el título
+            // Ranking de la Liga Privada
             const ligaActual = currentUserLeagues.find(l => l.league_id === currentId);
             title.innerHTML = `<i class="ri-trophy-line"></i> Ranking: ${ligaActual ? ligaActual.name : 'Liga'}`;
-            
-            // Usar el endpoint que ya trae el ranking calculado de esa liga
-            data = await api.getLeagueDetails(currentId); 
-
+            data = await api.getLeagueDetails(currentId);
         } else {
+            // Ranking Global (para Global y Competiciones)
             title.innerHTML = `<i class="ri-earth-line"></i> Ranking Global`;
             data = await api.getLeaderboard();
         }
 
-        // Renderizar Tabla
         tbody.innerHTML = '';
         if (!data || data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-muted);">Aún no hay puntajes.</td></tr>';
@@ -299,7 +349,7 @@ window.abrirRanking = async () => {
             let rowBg = 'transparent';
             let nameColor = 'var(--text-main)';
 
-            // Top 3 Styles
+            // Estilos Top 3
             if (index === 0) {
                 iconHtml = `<i class="ri-trophy-fill" style="color: #FFD700; font-size: 1.4em;"></i>`;
                 rowBg = 'rgba(255, 215, 0, 0.05)';
