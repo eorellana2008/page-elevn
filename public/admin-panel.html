@@ -4,15 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatchDay - Panel Admin</title>
+    <title>ELEVN - Panel Admin</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+    <link rel="icon" href="img/logo/logo-solitario.png">
 </head>
 
 <body>
-
     <div class="container" id="adminPage">
 
         <div
@@ -23,33 +21,24 @@
             </div>
             <div class="admin-header-buttons" style="margin-top: 0; margin-bottom: 0;">
                 <button onclick="window.location.href='/profile.html'" class="nav-btn"
-                    style="background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border);">
-                    <i class="ri-user-settings-line"></i> Mi Perfil
-                </button>
-                <button id="logoutButton" class="logout-btn">
-                    <i class="ri-logout-box-r-line"></i> Salir
-                </button>
+                    style="background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border);"><i
+                        class="ri-user-settings-line"></i> Mi Perfil</button>
+                <button id="logoutButton" class="logout-btn"><i class="ri-logout-box-r-line"></i> Salir</button>
             </div>
         </div>
 
         <div class="admin-tabs">
-            <button id="tab-btn-users" class="tab-btn active" onclick="switchTab('users')">
-                <i class="ri-group-line"></i> Usuarios
-            </button>
-            <button id="tab-btn-matches" class="tab-btn" onclick="switchTab('matches')">
-                <i class="ri-football-line"></i> Partidos
-            </button>
-            <button id="tab-btn-requests" class="tab-btn" onclick="switchTab('requests')">
-                <i class="ri-mail-unread-line"></i> Buzón
-            </button>
+            <button id="tab-btn-users" class="tab-btn active" onclick="window.switchTab('users')"><i
+                    class="ri-group-line"></i> Usuarios</button>
+            <button id="tab-btn-matches" class="tab-btn" onclick="window.switchTab('matches')"><i
+                    class="ri-football-line"></i> Partidos</button>
+            <button id="tab-btn-requests" class="tab-btn" onclick="window.switchTab('requests')"><i
+                    class="ri-mail-unread-line"></i> Buzón</button>
         </div>
 
-        <!-- TAB USUARIOS -->
         <div id="tab-users" class="tab-content active">
-            <div class="text-right mb-15">
-                <button onclick="abrirModalCrear()" class="nav-btn btn-create"><i class="ri-user-add-line"></i> Nuevo
-                    Usuario</button>
-            </div>
+            <div class="text-right mb-15"><button onclick="window.controllers.admin.openCreateUser()"
+                    class="nav-btn btn-create"><i class="ri-user-add-line"></i> Nuevo Usuario</button></div>
             <div class="admin-table-container">
                 <table id="usersTable">
                     <thead>
@@ -67,12 +56,9 @@
             </div>
         </div>
 
-        <!-- TAB PARTIDOS -->
         <div id="tab-matches" class="tab-content">
-            <div class="text-right mb-15">
-                <button onclick="abrirModalMatch()" class="nav-btn btn-create"><i class="ri-calendar-event-line"></i>
-                    Nuevo Partido</button>
-            </div>
+            <div class="text-right mb-15"><button onclick="window.controllers.admin.openCreateMatch()"
+                    class="nav-btn btn-create"><i class="ri-calendar-event-line"></i> Nuevo Partido</button></div>
             <div class="admin-table-container">
                 <table id="matchesTable">
                     <thead>
@@ -80,9 +66,8 @@
                             <th>Fecha</th>
                             <th>Torneo</th>
                             <th class="text-center">Local</th>
-                            <th>VS</th>
+                            <th class="text-center">E</th>
                             <th class="text-center">Visitante</th>
-                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -91,7 +76,6 @@
             </div>
         </div>
 
-        <!-- TAB BUZON -->
         <div id="tab-requests" class="tab-content">
             <div class="admin-table-container">
                 <table id="requestsTable">
@@ -110,107 +94,67 @@
         </div>
     </div>
 
-    <!-- MODALES -->
-
-    <!-- Modal Crear Usuario -->
     <div id="modalCrear" class="modal-overlay hidden">
         <div class="modal-content">
             <h2><i class="ri-user-add-line"></i> Nuevo Usuario</h2>
             <form id="formCrear">
-                <label>Usuario:</label> <input type="text" id="new_username" required>
-                <label>Email:</label> <input type="email" id="new_email" required>
-                <label>Password:</label>
-                <div class="password-container">
-                    <input type="password" id="new_password" required>
-                    <span class="toggle-password" id="toggleCreateUserPass">
-                        <i class="ri-eye-line"></i>
-                    </span>
-                </div>
-                <label>Rol:</label>
-                <select id="new_role">
-                    <option value="user">Usuario</option>
-                    <option value="moderator">Moderador</option>
-                    <option value="admin">Administrador</option>
-                    <option value="superadmin">Super Admin</option>
-                </select>
-                <label>País:</label>
-                <select id="new_country" required>
+                <label>Usuario:</label><input type="text" id="new_username" required>
+                <label>Email:</label><input type="email" id="new_email" required>
+                <label>Password:</label><input type="password" id="new_password" required>
+                <label>Rol:</label><select id="new_role"></select>
+                <label>País:</label><select id="new_country" required>
                     <option value="">Cargando...</option>
                 </select>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalCrear', false)">Cancelar</button>
-                    <button type="submit" class="btn-save">Crear</button>
-                </div>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalCrear', false)">Cancelar</button><button type="submit"
+                        class="btn-save">Crear</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Editar Usuario -->
     <div id="modalEditar" class="modal-overlay hidden">
         <div class="modal-content">
             <h2><i class="ri-edit-line"></i> Editar Usuario</h2>
             <form id="formEditar">
                 <input type="hidden" id="edit_id">
-                <label>Usuario:</label> <input type="text" id="edit_username" required>
-                <label>Email:</label> <input type="email" id="edit_email" required>
-                <label>Rol:</label>
-                <select id="edit_role">
-                    <option value="user">Usuario</option>
-                    <option value="moderator">Moderador</option>
-                    <option value="admin">Administrador</option>
-                    <option value="superadmin">Super Admin</option>
-                </select>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalEditar', false)">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar</button>
+                <label>Usuario:</label><input type="text" id="edit_username" required>
+                <label>Email:</label><input type="email" id="edit_email" required>
+                <label>Rol:</label><select id="edit_role"></select>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalEditar', false)">Cancelar</button><button type="submit"
+                        class="btn-save">Guardar</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalReset" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 style="color:var(--danger)"><i class="ri-key-2-line"></i> Reset Password</h2>
+            <form id="formReset">
+                <input type="hidden" id="reset_id">
+                <label>Nueva Contraseña:</label><input type="password" id="reset_new_password" required>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalReset', false)">Cancelar</button><button type="submit"
+                        class="btn-save" style="background:var(--danger); border-color:var(--danger)">Cambiar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Reset Password -->
-    <div id="modalReset" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h2 style="color: var(--danger);"><i class="ri-key-2-line"></i> Reset Password</h2>
-            <form id="formReset">
-                <input type="hidden" id="reset_id">
-                <div class="password-container">
-                    <input type="password" id="reset_new_password" required placeholder="Nueva contraseña..."
-                        class="input-center">
-                    <span class="toggle-password" id="toggleResetPass">
-                        <i class="ri-eye-line"></i>
-                    </span>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalReset', false)">Cancelar</button>
-                    <button type="submit" class="btn-save"
-                        style="background-color: var(--danger); border-color: var(--danger); color: white;">Cambiar</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <div id="modalMatch" class="modal-overlay hidden">
         <div class="modal-content">
             <h2><i class="ri-football-line"></i> Crear Partido</h2>
             <form id="formMatch">
-                <select id="match_competition" required>
+                <label>Competición:</label><select id="match_competition">
                     <option value="">Cargando...</option>
                 </select>
-
-                <label>Fase / Jornada:</label>
-                <input type="text" id="match_round" placeholder="Ej: Jornada 10, 4tos de Final...">
-
-                <label>Local:</label> <input type="text" id="team_home" required>
-                <label>Visitante:</label> <input type="text" id="team_away" required>
-                <label>Fecha y Hora:</label> <input type="datetime-local" id="match_date" required>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalMatch', false)">Cancelar</button>
-                    <button type="submit" class="btn-save">Crear</button>
-                </div>
+                <label>Fase / Jornada:</label><input type="text" id="match_round" placeholder="Ej: Jornada 10">
+                <label>Local:</label><input type="text" id="team_home" required>
+                <label>Visitante:</label><input type="text" id="team_away" required>
+                <label>Fecha y Hora:</label><input type="datetime-local" id="match_date" required>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalMatch', false)">Cancelar</button><button type="submit"
+                        class="btn-save">Crear</button></div>
             </form>
         </div>
     </div>
@@ -220,87 +164,52 @@
             <h2><i class="ri-edit-line"></i> Editar Partido</h2>
             <form id="formEditMatch">
                 <input type="hidden" id="edit_match_id">
-
-                <label>Competición:</label>
-                <select id="edit_match_competition" required>
-                    <option value="">Cargando...</option>
-                </select>
-
-                <label>Fase / Jornada:</label>
-                <input type="text" id="edit_match_round" placeholder="Ej: Final">
-
-                <label>Local:</label> <input type="text" id="edit_team_home" required>
-                <label>Visitante:</label> <input type="text" id="edit_team_away" required>
-                <label>Fecha:</label> <input type="datetime-local" id="edit_match_date" required>
-
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalEditMatch', false)">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar</button>
-                </div>
+                <label>Competición:</label><select id="edit_match_competition"></select>
+                <label>Fase / Jornada:</label><input type="text" id="edit_match_round">
+                <label>Local:</label><input type="text" id="edit_team_home" required>
+                <label>Visitante:</label><input type="text" id="edit_team_away" required>
+                <label>Fecha y Hora:</label><input type="datetime-local" id="edit_match_date" required>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalEditMatch', false)">Cancelar</button><button type="submit"
+                        class="btn-save">Guardar</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Score -->
     <div id="modalScore" class="modal-overlay hidden">
         <div class="modal-content">
-            <h2 style="color: var(--accent);"><i class="ri-trophy-line"></i> Resultado</h2>
-            <p class="modal-help-text" id="scoreMatchLabel">Local vs Visita</p>
+            <h2><i class="ri-trophy-line"></i> Resultado</h2>
             <form id="formScore">
                 <input type="hidden" id="score_id">
-                <div class="score-container">
-                    <div class="score-box">
-                        <label>Local</label>
-                        <input type="number" id="score_home" class="input-score" required min="0">
-                    </div>
-                    <div class="score-separator">-</div>
-                    <div class="score-box">
-                        <label>Visita</label>
-                        <input type="number" id="score_away" class="input-score" required min="0">
-                    </div>
+                <div style="display:flex; gap:10px; align-items:center; justify-content:center;">
+                    <input type="number" id="score_home" placeholder="Local" required
+                        style="text-align:center; font-size:1.5em; width:80px;">
+                    <span>-</span>
+                    <input type="number" id="score_away" placeholder="Visita" required
+                        style="text-align:center; font-size:1.5em; width:80px;">
                 </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalScore', false)">Cancelar</button>
-                    <button type="submit" class="btn-save">Finalizar</button>
-                </div>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalScore', false)">Cancelar</button><button type="submit"
+                        class="btn-save">Finalizar</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Response -->
     <div id="modalResponse" class="modal-overlay hidden">
         <div class="modal-content">
             <h2><i class="ri-reply-line"></i> Responder</h2>
-            <p class="modal-help-text" id="requestUserLabel">Usuario: X</p>
-            <p class="modal-help-text" id="requestTypeLabel">Tipo: Y</p>
-            <p class="modal-help-text" id="requestMessage">Mensaje: Z</p>
+            <p id="requestMessage" style="color:var(--text-muted); font-style:italic; margin-bottom:10px;"></p>
             <form id="formResponse">
                 <input type="hidden" id="response_id">
-                <label>Mensaje de Respuesta:</label>
-                <textarea id="response_msg" rows="5" required></textarea>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalResponse', false)">Cancelar</button>
-                    <button type="submit" class="btn-save" style="background: #667eea;">Enviar</button>
-                </div>
+                <textarea id="response_msg" rows="5" required placeholder="Escribe tu respuesta..."></textarea>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalResponse', false)">Cancelar</button><button type="submit"
+                        class="btn-save">Enviar</button></div>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
-    <script src="js/api/api.js"></script>
-    <script src="js/utils/ui.js"></script>
-    <script src="js/main.js"></script>
-
-    <!-- NUEVO: Script General del Dashboard -->
-    <script src="js/pages/admin/dashboard.js"></script>
-
-    <!-- Scripts Específicos -->
-    <script src="js/pages/admin/users.js"></script>
-    <script src="js/pages/admin/matches.js"></script>
-    <script src="js/pages/admin/requests.js"></script>
+    <script type="module" src="js/controllers/admin.controller.js"></script>
 </body>
 
 </html>

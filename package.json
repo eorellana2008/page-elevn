@@ -1,7 +1,7 @@
 {
-  "name": "matchday",
+  "name": "elevn",  
   "version": "1.0.0",
-  "description": "",
+  "description": "Fantasy Football Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

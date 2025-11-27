@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatchDay - Historia</title>
+    <title>ELEVN - Historia</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="img/logo/logo-solitario.png">
 </head>
 
 <body>
@@ -22,11 +23,11 @@
         </div>
 
         <div class="matches-grid">
-
             <div class="match-card" style="border-color: #5DADEC;">
                 <div class="match-header">
                     <span><i class="ri-map-pin-line"></i> Qatar</span>
-                    <span class="tournament-badge" style="background: #5DADEC; color:white;">2022</span>
+                    <span
+                        style="background: #5DADEC; color:white; padding:2px 8px; border-radius:4px; font-size:0.8em; font-weight:bold;">2022</span>
                 </div>
                 <div class="match-body" style="text-align: center;">
                     <div style="font-size: 4em; margin-bottom: 10px;">🇦🇷</div>
@@ -42,7 +43,8 @@
             <div class="match-card" style="border-color: #EF4135;">
                 <div class="match-header">
                     <span><i class="ri-map-pin-line"></i> Rusia</span>
-                    <span class="tournament-badge" style="background: #EF4135; color:white;">2018</span>
+                    <span
+                        style="background: #EF4135; color:white; padding:2px 8px; border-radius:4px; font-size:0.8em; font-weight:bold;">2018</span>
                 </div>
                 <div class="match-body" style="text-align: center;">
                     <div style="font-size: 4em; margin-bottom: 10px;">🇫🇷</div>
@@ -58,7 +60,8 @@
             <div class="match-card" style="border-color: #FFD700;">
                 <div class="match-header">
                     <span><i class="ri-map-pin-line"></i> Brasil</span>
-                    <span class="tournament-badge" style="background: #FFD700; color:black;">2014</span>
+                    <span
+                        style="background: #FFD700; color:black; padding:2px 8px; border-radius:4px; font-size:0.8em; font-weight:bold;">2014</span>
                 </div>
                 <div class="match-body" style="text-align: center;">
                     <div style="font-size: 4em; margin-bottom: 10px;">🇩🇪</div>
@@ -74,7 +77,8 @@
             <div class="match-card" style="border-color: #C60B1E;">
                 <div class="match-header">
                     <span><i class="ri-map-pin-line"></i> Sudáfrica</span>
-                    <span class="tournament-badge" style="background: #C60B1E; color:white;">2010</span>
+                    <span
+                        style="background: #C60B1E; color:white; padding:2px 8px; border-radius:4px; font-size:0.8em; font-weight:bold;">2010</span>
                 </div>
                 <div class="match-body" style="text-align: center;">
                     <div style="font-size: 4em; margin-bottom: 10px;">🇪🇸</div>
@@ -86,13 +90,13 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <script src="js/api/api.js"></script>
-    <script src="js/utils/ui.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module">
+        import { initSession } from './js/utils/session.js';
+        document.addEventListener('DOMContentLoaded', initSession);
+    </script>
 </body>
 
 </html>

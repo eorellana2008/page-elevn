@@ -1,22 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatchDay - Ligas</title>
+    <title>ELEVN - Ligas</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" href="img/logo/logo-solitario.png">
+
 </head>
+
 <body>
     <div class="container" style="max-width: 600px;">
-        
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
             <a href="/profile.html" class="back-link"><i class="ri-arrow-left-line"></i> Volver</a>
             <div style="display:flex; gap:10px;">
-                <button onclick="abrirModalUnirse()" class="nav-btn" style="background: var(--bg-input); border: 1px solid var(--accent); color: var(--accent); width:auto; padding: 0 15px;">
+                <button onclick="window.controllers.leagues.openJoin()" class="nav-btn"
+                    style="background: var(--bg-input); border: 1px solid var(--accent); color: var(--accent); width:auto; padding: 0 15px;">
                     <i class="ri-login-box-line"></i> Unirme
                 </button>
-                <button onclick="abrirModalCrear()" class="nav-btn" style="width:auto; padding: 0 15px;">
+                <button onclick="window.controllers.leagues.openCreate()" class="nav-btn"
+                    style="width:auto; padding: 0 15px;">
                     <i class="ri-add-line"></i> Crear
                 </button>
             </div>
@@ -38,7 +44,8 @@
                 <label>Nombre de la Liga:</label>
                 <input type="text" id="league_name" required placeholder="Ej: Los del Barrio">
                 <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" onclick="toggleModal('modalCreate', false)">Cancelar</button>
+                    <button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalCreate', false)">Cancelar</button>
                     <button type="submit" class="btn-save">Crear</button>
                 </div>
             </form>
@@ -51,9 +58,11 @@
             <p class="modal-help-text">Ingresa el código de invitación.</p>
             <form id="formJoin">
                 <label>Código de Liga:</label>
-                <input type="text" id="league_code" required placeholder="Ej: ABCD12" style="text-transform: uppercase; text-align: center; font-size: 1.5em; letter-spacing: 3px;">
+                <input type="text" id="league_code" required placeholder="Ej: ABCD12"
+                    style="text-transform: uppercase; text-align: center; font-size: 1.5em; letter-spacing: 3px;">
                 <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" onclick="toggleModal('modalJoin', false)">Cancelar</button>
+                    <button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalJoin', false)">Cancelar</button>
                     <button type="submit" class="btn-save">Entrar</button>
                 </div>
             </form>
@@ -76,28 +85,24 @@
                 </table>
             </div>
             <div class="modal-buttons">
-                <button class="btn-cancel" onclick="toggleModal('modalRanking', false)" style="width:100%;">Cerrar</button>
+                <button class="btn-cancel" onclick="window.toggleModal('modalRanking', false)"
+                    style="width:100%;">Cerrar</button>
             </div>
         </div>
     </div>
 
     <div id="modalManageMatches" class="modal-overlay hidden">
         <div class="modal-content" style="max-width: 600px;">
-            <h2 id="manageTitle"><i class="ri-settings-3-line"></i> Gestionar Jornada</h2>
-            <p class="modal-help-text">Agrega los partidos que valdrán puntos en esta liga.</p>
-            
-            <div id="manageMatchesContainer" style="max-height: 400px; overflow-y: auto;">
-                </div>
-
+            <h2><i class="ri-settings-3-line"></i> Gestionar: <span id="manageTitle"></span></h2>
+            <div id="manageMatchesContainer" style="max-height: 400px; overflow-y: auto;"></div>
             <div class="modal-buttons">
-                <button class="btn-cancel" onclick="toggleModal('modalManageMatches', false)" style="width:100%;">Cerrar</button>
+                <button class="btn-cancel" onclick="window.toggleModal('modalManageMatches', false)"
+                    style="width:100%;">Cerrar</button>
             </div>
         </div>
     </div>
 
-    <script src="js/api/api.js"></script>
-    <script src="js/utils/ui.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/pages/leagues.js"></script>
+    <script type="module" src="js/controllers/leagues.controller.js"></script>
 </body>
+
 </html>

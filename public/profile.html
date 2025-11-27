@@ -4,123 +4,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatchDay - Perfil</title>
+    <title>ELEVN - Perfil</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="img/logo/logo-solitario.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
 </head>
 
-<body>
-    <div class="container" style="max-width: 500px;">
+<body class="fade-in">
 
-        <div class="profile-header">
-            <div class="profile-avatar" id="profileAvatar">
-                <i class="ri-user-3-line"></i>
+    <div class="profile-container-v8">
+
+        <aside class="profile-sidebar-left desktop-only">
+            <div class="nav-brand">
+                <img src="img/logo/logo-letras.png" alt="ELEVN" style="width: 120px; margin-bottom: 20px;">
+            </div>
+            <nav class="nav-menu-vertical">
+                <a href="/results.html" class="nav-item"><i class="ri-football-line"></i> Quiniela</a>
+                <a href="/leagues.html" class="nav-item"><i class="ri-trophy-line"></i> Mis Ligas</a>
+                <a href="/history.html" class="nav-item"><i class="ri-book-mark-line"></i> Historia Mundial</a>
+                <div id="btnAdminPanelNav" class="nav-item hidden admin-link"
+                    onclick="window.location.href='/admin-panel.html'">
+                    <i class="ri-admin-line"></i> Admin Panel
+                </div>
+            </nav>
+        </aside>
+
+        <main class="profile-main-content">
+
+            <div class="profile-hero-header animate-up">
+                <div class="hero-banner"></div>
+                <div class="hero-content">
+                    <div class="hero-avatar-container">
+                        <div class="profile-avatar-hero" id="profileAvatar">
+                            <i class="ri-user-3-line"></i>
+                        </div>
+                        <button class="btn-edit-avatar" onclick="window.controllers.profile.openEdit()"
+                            title="Editar Perfil">
+                            <i class="ri-pencil-fill"></i>
+                        </button>
+                    </div>
+
+                    <div class="hero-info">
+                        <div class="hero-identity">
+                            <h1 id="profileName">Cargando...</h1>
+                            <span class="hero-role" id="profileRole">...</span>
+                        </div>
+                        <div class="hero-location" id="profileLocationInfo">
+                            <i class="ri-map-pin-user-line"></i> <span>...</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-stats-block animate-pulse-subtle">
+                        <div class="stat-label">Puntos Totales</div>
+                        <div class="stat-value-big">
+                            <i class="ri-trophy-line" style="color: var(--accent);"></i> <span
+                                id="profilePoints">0</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                <h1 id="profileName" style="font-size: 1.8em; margin: 10px 0;">Cargando...</h1>
-                <button onclick="abrirModalEditarPerfil()"
-                    style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2em; padding: 5px;"
-                    title="Editar Perfil">
-                    <i class="ri-pencil-line"></i>
-                </button>
+            <div class="profile-stats-bar animate-up delay-1">
+                <div class="stat-box glass-effect">
+                    <i class="ri-bar-chart-grouped-line accent-icon"></i>
+                    <div>
+                        <span class="stat-num" id="profileEfficiency">--%</span>
+                        <span class="stat-desc">Efectividad</span>
+                    </div>
+                </div>
+                <div class="stat-box glass-effect">
+                    <i class="ri-medal-line accent-icon"></i>
+                    <div>
+                        <span class="stat-num">#Top</span>
+                        <span class="stat-desc">Ranking Global</span>
+                    </div>
+                </div>
             </div>
 
-            <div onclick="abrirHistorialPuntos()"
-                style="background: var(--bg-input); display: inline-flex; align-items: center; gap: 5px; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--accent); margin-bottom: 10px; cursor: pointer; transition: transform 0.2s;"
-                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-
-                <i class="ri-trophy-line" style="color: var(--accent);"></i>
-                <span style="color: var(--text-main); font-weight: bold; font-size: 1.1em;" id="profilePoints">0</span>
-                <span style="color: var(--text-muted); font-size: 0.9em;"> Pts</span>
-            </div>
-
-            <p class="subtitle" id="profileRole"
-                style="margin-top: 5px; text-transform: uppercase; font-size: 0.8em; letter-spacing: 1px;">...</p>
-        </div>
-
-        <div class="info-group">
-            <span class="info-label"><i class="ri-mail-line"></i> Correo</span>
-            <span class="info-value" id="profileEmail">...</span>
-        </div>
-
-        <div class="info-group">
-            <span class="info-label"><i class="ri-map-pin-line"></i> Ubicación</span>
-            <span class="info-value" id="profileLocation">...</span>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; margin-bottom: 25px;">
-
-            <div
-                style="background: var(--bg-input); padding: 15px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 110px;">
-                <i class="ri-bar-chart-grouped-line"
-                    style="color: var(--accent); font-size: 1.8em; margin-bottom: 5px;"></i>
-                <div style="font-size: 0.85em; color: var(--text-muted); font-weight: 500;">Efectividad Global</div>
-                <div style="font-size: 1.5em; font-weight: 700; margin-top: 2px;" id="profileEfficiency">--%</div>
-            </div>
-
-            <div id="nextMatchCard"
-                style="background: var(--bg-input); padding: 15px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 110px; transition: transform 0.2s, border-color 0.2s;">
-                <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 8px; font-weight: 500;">
-                    Próximo Duelo <i class="ri-football-line"
-                        style="color: var(--accent); vertical-align: middle; font-size: 1.1em;"></i>
+            <div class="profile-tabs-container animate-up delay-2">
+                <div class="tabs-header">
+                    <button class="tab-link active" onclick="window.switchProfileTab('history')">
+                        <i class="ri-history-line"></i> Actividad Reciente
+                    </button>
+                    <button class="tab-link" onclick="window.switchProfileTab('leagues')">
+                        <i class="ri-shield-star-line"></i> Mis Ligas
+                    </button>
                 </div>
 
-                <div id="nextMatchInfo" style="font-weight: 700; font-size: 1.05em; line-height: 1.2;">No hay partidos
-                    pendientes</div>
-                <div id="nextMatchTime"
-                    style="font-size: 0.85em; color: var(--accent); margin-top: 6px; font-weight: 600;"></div>
+                <div class="tabs-content">
+                    <div id="tab-history" class="tab-pane active">
+                        <div class="empty-state-pane"><i class="ri-loader-4-line ri-spin"></i></div>
+                    </div>
+                    <div id="tab-leagues" class="tab-pane">
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
 
-        <div class="text-center mt-20">
-            <button onclick="document.getElementById('modalChangePass').classList.remove('hidden')"
-                class="nav-btn btn-change-pass" style="width: auto;">
-                <i class="ri-lock-password-line"></i> Cambiar contraseña
-            </button>
-        </div>
+        <aside class="profile-sidebar-right desktop-only animate-up delay-1">
 
-        <h3 class="mt-20"
-            style="border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--text-muted); font-size: 0.9em; text-transform: uppercase;">
-            Menú Principal</h3>
-
-        <div class="menu-grid">
-            <div class="menu-card" onclick="window.location.href='/results.html'">
-                <div><i class="ri-football-line"></i></div>
-                <strong>Quiniela</strong>
+            <div class="widget-card glass-effect" id="nextMatchCardWidget">
+                <h3><i class="ri-calendar-event-fill accent-icon"></i> Próximo Duelo</h3>
+                <div id="nextMatchInfoWidget" style="font-weight: 700; margin: 10px 0;">No hay partidos</div>
+                <div id="nextMatchTimeWidget" style="color: var(--accent); font-size: 0.9em;"></div>
             </div>
 
-            <div class="menu-card" onclick="document.getElementById('modalSupport').classList.remove('hidden')">
-                <div><i class="ri-customer-service-2-line"></i></div>
-                <strong>Soporte</strong>
+            <div class="widget-card settings-widget">
+                <h3>Configuración</h3>
+                <button onclick="window.toggleModal('modalChangePass', true)" class="settings-link">
+                    <i class="ri-lock-password-line"></i> Cambiar Contraseña
+                </button>
+                <button onclick="window.toggleModal('modalSupport', true)" class="settings-link">
+                    <i class="ri-customer-service-2-line"></i> Soporte & Ayuda
+                </button>
+                <button id="logoutButtonWidget" class="settings-link logout">
+                    <i class="ri-logout-box-line"></i> Cerrar Sesión
+                </button>
             </div>
+        </aside>
+    </div>
 
-            <div class="menu-card" onclick="window.abrirModalHistorial()">
-                <div><i class="ri-file-history-line"></i></div>
-                <strong>Historial</strong>
-            </div>
+    <div class="bottom-nav-bar mobile-only">
+        <a href="/results.html" class="nav-icon-btn"><i class="ri-football-line"></i><span>Quiniela</span></a>
+        <a href="/leagues.html" class="nav-icon-btn"><i class="ri-trophy-line"></i><span>Ligas</span></a>
+        <a href="#" class="nav-icon-btn active"><i class="ri-user-3-fill"></i><span>Perfil</span></a>
+        <button onclick="window.toggleModal('modalSettingsMobile', true)" class="nav-icon-btn"><i
+                class="ri-menu-line"></i><span>Menú</span></button>
+    </div>
 
-            <div class="menu-card" onclick="window.location.href='/leagues.html';">
-                <div><i class="ri-trophy-line"></i></div>
-                <strong>Mis Ligas</strong>
+    <div id="modalSettingsMobile" class="modal-overlay hidden mobile-only">
+        <div class="modal-content"
+            style="position: absolute; bottom: 0; width: 100%; border-radius: 20px 20px 0 0; max-width: none; padding-bottom: 40px;">
+            <h2>Menú</h2>
+            <div class="menu-grid" style="grid-template-columns: 1fr; gap: 10px;">
+                <div class="menu-card" onclick="window.location.href='/history.html'">
+                    <div><i class="ri-book-mark-line"></i></div><strong>Historia Mundial</strong>
+                </div>
+                <div class="menu-card" onclick="window.toggleModal('modalChangePass', true)">
+                    <div><i class="ri-lock-password-line"></i></div><strong>Seguridad</strong>
+                </div>
+                <div class="menu-card" onclick="window.toggleModal('modalSupport', true)">
+                    <div><i class="ri-customer-service-2-line"></i></div><strong>Soporte</strong>
+                </div>
+                <div id="btnAdminPanelMobile" class="menu-card hidden admin-link"
+                    onclick="window.location.href='/admin-panel.html'">
+                    <div><i class="ri-admin-line"></i></div><strong>Admin Panel</strong>
+                </div>
             </div>
-            <div class="menu-card" onclick="window.location.href='/history.html';">
-                <div><i class="ri-book-mark-line"></i></div>
-                <strong>Historia</strong>
+            <div class="mt-20">
+                <button id="logoutButtonMobile" class="logout-btn" style="width: 100%;"><i
+                        class="ri-logout-box-line"></i> Cerrar Sesión</button>
             </div>
-            <div id="btnAdminPanel" class="menu-card hidden" onclick="window.location.href='/admin-panel.html'"
-                style="border-color: var(--accent);">
-                <div style="color: var(--accent);"><i class="ri-admin-line"></i></div>
-                <strong style="color: var(--accent);">Admin Panel</strong>
-            </div>
-        </div>
-
-        <div class="mt-20">
-            <button id="logoutButton" class="logout-btn" style="width: 100%;">
-                <i class="ri-logout-box-line"></i> Cerrar Sesión
-            </button>
+            <button class="btn-cancel mt-20" onclick="window.toggleModal('modalSettingsMobile', false)"
+                style="width: 100%;">Cerrar Menú</button>
         </div>
     </div>
 
@@ -128,28 +164,21 @@
         <div class="modal-content">
             <h2><i class="ri-lock-line"></i> Seguridad</h2>
             <form id="formChangePass">
-
-                <!-- CAMBIO: Contraseña Actual -->
                 <label>Contraseña Actual:</label>
                 <div class="password-container">
                     <input type="password" id="current_pass" required>
-                    <span class="toggle-password" id="toggleCurrentPass">
-                        <i class="ri-eye-line"></i>
-                    </span>
+                    <span class="toggle-password" id="toggleCurrentPass"><i class="ri-eye-line"></i></span>
                 </div>
 
-                <!-- CAMBIO: Nueva Contraseña -->
                 <label>Nueva Contraseña:</label>
                 <div class="password-container">
                     <input type="password" id="new_pass" required>
-                    <span class="toggle-password" id="toggleNewPass">
-                        <i class="ri-eye-line"></i>
-                    </span>
+                    <span class="toggle-password" id="toggleNewPass"><i class="ri-eye-line"></i></span>
                 </div>
 
                 <div class="modal-buttons">
                     <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalChangePass', false)">Cancelar</button>
+                        onclick="window.toggleModal('modalChangePass', false)">Cancelar</button>
                     <button type="submit" class="btn-save">Actualizar</button>
                 </div>
             </form>
@@ -159,50 +188,19 @@
     <div id="modalSupport" class="modal-overlay hidden">
         <div class="modal-content">
             <h2><i class="ri-mail-send-line"></i> Enviar Solicitud</h2>
-            <p class="modal-help-text">Envía tus dudas o reclamos al staff.</p>
             <form id="formSupport">
                 <label>Tipo:</label>
                 <select id="support_type">
                     <option value="sugerencia">Sugerencia</option>
-                    <option value="reclamo">Reclamo de Puntos</option>
-                    <option value="bug">Reportar Error (Web)</option>
-                    <option value="cuenta">Problema con Cuenta</option>
-                    <option value="otro">Otro Asunto</option>
+                    <option value="reclamo">Reclamo</option>
+                    <option value="bug">Error</option>
+                    <option value="otro">Otro</option>
                 </select>
-                <label>Mensaje:</label>
-                <textarea id="support_msg" rows="4" required placeholder="Escribe aquí..."></textarea>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalSupport', false)">Cancelar</button>
-                    <button type="submit" class="btn-save">Enviar</button>
-                </div>
+                <label>Mensaje:</label><textarea id="support_msg" rows="4" required></textarea>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalSupport', false)">Cancelar</button><button type="submit"
+                        class="btn-save">Enviar</button></div>
             </form>
-        </div>
-    </div>
-
-    <div id="modalHistory" class="modal-overlay hidden">
-        <div class="modal-content" style="max-width: 600px;">
-            <h2><i class="ri-history-line"></i> Tus Tickets</h2>
-            <div id="historyList" style="max-height: 350px; overflow-y: auto; padding: 5px;">
-                <p style="text-align: center; color: var(--text-muted);">Cargando...</p>
-            </div>
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="toggleModal('modalHistory', false)"
-                    style="width: 100%;">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalPointsHistory" class="modal-overlay hidden">
-        <div class="modal-content" style="max-width: 500px;">
-            <h2 style="color: var(--accent);"><i class="ri-file-list-3-line"></i> Detalle de Puntos</h2>
-            <div id="pointsList" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
-                <p class="text-center" style="color: var(--text-muted);">Cargando...</p>
-            </div>
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="toggleModal('modalPointsHistory', false)"
-                    style="width: 100%;">Cerrar</button>
-            </div>
         </div>
     </div>
 
@@ -210,96 +208,59 @@
         <div class="modal-content">
             <h2><i class="ri-user-settings-line"></i> Editar Mis Datos</h2>
             <form id="formEditProfile">
-                <label>Usuario:</label>
-                <input type="text" id="my_username" required>
-
-                <label>Correo:</label>
-                <input type="email" id="my_email" required>
-
-                <label>País:</label>
-                <select id="my_country" required style="margin-bottom: 20px;">
-                    <option value="">Cargando lista...</option>
+                <label>Usuario:</label><input type="text" id="my_username" required>
+                <label>Correo:</label><input type="email" id="my_email" required>
+                <label>País:</label><select id="my_country" required style="margin-bottom: 20px;">
+                    <option value="">Cargando...</option>
                 </select>
-
                 <label>Elige tu Avatar:</label>
                 <div class="avatar-selector"
                     style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="default" checked>
+                    <label class="avatar-option"><input type="radio" name="avatar" value="default">
                         <div class="icon-box"><i class="ri-user-3-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="ball">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="ball">
                         <div class="icon-box"><i class="ri-football-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="robot">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="robot">
                         <div class="icon-box"><i class="ri-robot-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="alien">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="alien">
                         <div class="icon-box"><i class="ri-aliens-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="trophy">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="trophy">
                         <div class="icon-box"><i class="ri-cup-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="star">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="star">
                         <div class="icon-box"><i class="ri-star-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="fire">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="fire">
                         <div class="icon-box"><i class="ri-fire-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="flash">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="flash">
                         <div class="icon-box"><i class="ri-flashlight-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="shield">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="shield">
                         <div class="icon-box"><i class="ri-shield-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="ghost">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="ghost">
                         <div class="icon-box"><i class="ri-ghost-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="rocket">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="rocket">
                         <div class="icon-box"><i class="ri-rocket-line"></i></div>
                     </label>
-
-                    <label class="avatar-option">
-                        <input type="radio" name="avatar" value="crown">
+                    <label class="avatar-option"><input type="radio" name="avatar" value="crown">
                         <div class="icon-box"><i class="ri-vip-crown-fill"></i></div>
                     </label>
-
                 </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel"
-                        onclick="toggleModal('modalEditProfile', false)">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar Cambios</button>
-                </div>
+                <div class="modal-buttons"><button type="button" class="btn-cancel"
+                        onclick="window.toggleModal('modalEditProfile', false)">Cancelar</button><button type="submit"
+                        class="btn-save">Guardar Cambios</button></div>
             </form>
         </div>
     </div>
 
-    <script src="js/api/api.js"></script>
-    <script src="js/utils/ui.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/pages/profile-view.js"></script>
-    <script src="js/pages/profile-actions.js"></script>
+    <script type="module" src="js/controllers/profile.controller.js"></script>
 </body>
 
 </html>

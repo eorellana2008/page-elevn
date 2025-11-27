@@ -4,42 +4,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatchDay - Quiniela</title>
+    <title>ELEVN - Quiniela</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="img/logo/logo-solitario.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
 </head>
 
-<body>
-    <div class="container" id="resultsPage" style="max-width: 800px;">
+<body class="fade-in">
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-            <a href="/profile.html" class="back-link"><i class="ri-arrow-left-line"></i> Volver</a>
-            <button onclick="abrirRanking()" class="nav-btn"
-                style="background: var(--bg-input); color: #FFD700; border: 1px solid #FFD700;">
-                <i class="ri-trophy-fill"></i> Ranking
-            </button>
-        </div>
+    <div class="profile-container-v8">
 
-        <h1 style="margin-bottom: 5px;">La Quiniela</h1>
-        <p class="subtitle">Haz tus pronósticos.</p>
+        <aside class="profile-sidebar-left desktop-only">
+            <div class="nav-brand">
+                <img src="img/logo/logo-letras.png" alt="ELEVN" style="width: 120px; margin-bottom: 20px;">
+            </div>
+            <nav class="nav-menu-vertical">
+                <a href="/results.html" class="nav-item active"><i class="ri-football-line"></i> Quiniela</a>
+                <a href="/leagues.html" class="nav-item"><i class="ri-trophy-line"></i> Mis Ligas</a>
+                <a href="/history.html" class="nav-item"><i class="ri-book-mark-line"></i> Historia Mundial</a>
+                <a href="/profile.html" class="nav-item"><i class="ri-user-3-line"></i> Mi Perfil</a>
+                <div id="btnAdminPanelNav" class="nav-item hidden admin-link"
+                    onclick="window.location.href='/admin-panel.html'">
+                    <i class="ri-admin-line"></i> Admin Panel
+                </div>
+            </nav>
+        </aside>
 
-        <div id="tabsContainer" class="filters-container" style="display:flex; gap:10px; overflow-x:auto; margin-bottom:20px; white-space: nowrap; padding-bottom: 5px;">
+        <main class="profile-main-content">
+            <div class="quiniela-hero animate-up">
+                <div class="quiniela-content">
+                    <div>
+                        <h1>La Quiniela</h1>
+                        <p>Demuestra tu pasión. Predice y gana.</p>
+                    </div>
+                    <div class="hero-icon">
+                        <i class="ri-football-fill"></i>
+                    </div>
+                </div>
             </div>
 
-        <div id="matchesContainer" class="matches-grid">
-            <p style="text-align:center; color: var(--text-muted);">Cargando...</p>
-        </div>
+            <div id="tabsContainer" class="filters-container animate-up delay-1">
+            </div>
 
-        <div class="mt-20">
-            <button id="logoutButton" class="logout-btn"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
-        </div>
+            <div id="matchesContainer" class="matches-grid animate-up delay-2">
+                <p style="text-align:center; color: var(--text-muted); width:100%;">Cargando partidos...</p>
+            </div>
+        </main>
+
+        <aside class="profile-sidebar-right desktop-only animate-up delay-1">
+
+            <div class="widget-card glass-effect">
+                <h3 id="miniRankTitle"><i class="ri-vip-crown-fill accent-icon"></i> Top 5 Global</h3>
+                <div id="miniLeaderboard" style="margin-top: 15px;">
+                    <p class="text-muted text-center text-sm">Cargando...</p>
+                </div>
+                <button onclick="window.controllers.results.openRanking()" class="nav-btn mt-20"
+                    style="width:100%; font-size:0.8em;">Ver Ranking Completo</button>
+            </div>
+
+            <div class="alert-box">
+                <i class="ri-time-line" style="font-size: 1.5em;"></i>
+                <div>
+                    <strong>Aviso de Temporada</strong>
+                    <p style="margin:0; font-size:0.85em; opacity:0.9;">Los puntos se reiniciarán al finalizar la
+                        temporada.</p>
+                </div>
+            </div>
+
+            <div class="widget-card" style="margin-top: 20px;">
+                <h3><i class="ri-information-line"></i> Reglas</h3>
+                <ul style="list-style: none; padding: 0; font-size: 0.9em; color: var(--text-muted);">
+                    <li style="margin-bottom: 8px;"><span style="color: #00FFC0; font-weight: bold;">+3 Pts</span>
+                        Resultado Exacto</li>
+                    <li style="margin-bottom: 8px;"><span style="color: #FFD700; font-weight: bold;">+1 Pt</span>
+                        Ganador / Empate</li>
+                    <li><span style="color: var(--danger); font-weight: bold;">0 Pts</span> Fallo</li>
+                </ul>
+            </div>
+
+            <div class="widget-card settings-widget" style="margin-top: 20px;">
+                <button id="logoutButtonWidget" class="settings-link logout">
+                    <i class="ri-logout-box-line"></i> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <div class="bottom-nav-bar mobile-only">
+        <a href="#" class="nav-icon-btn active"><i class="ri-football-fill"></i><span>Quiniela</span></a>
+        <a href="/leagues.html" class="nav-icon-btn"><i class="ri-trophy-line"></i><span>Ligas</span></a>
+        <a href="/profile.html" class="nav-icon-btn"><i class="ri-user-3-line"></i><span>Perfil</span></a>
+        <button onclick="window.toggleModal('modalSettingsMobile', true)" class="nav-icon-btn"><i
+                class="ri-menu-line"></i><span>Menú</span></button>
     </div>
 
     <div id="modalRanking" class="modal-overlay hidden">
         <div class="modal-content">
-            <h2><i class="ri-bar-chart-grouped-line"></i> Posiciones</h2>
-            <div style="max-height: 300px; overflow-y: auto;">
+            <h2><i class="ri-earth-line"></i> Ranking Global</h2>
+            <div style="max-height: 350px; overflow-y: auto;">
                 <table style="width:100%;">
                     <thead>
                         <tr style="color: var(--accent); border-bottom: 1px solid var(--border);">
@@ -48,20 +110,46 @@
                             <th class="text-right">Pts</th>
                         </tr>
                     </thead>
-                    <tbody id="rankingBody"></tbody>
+                    <tbody id="rankingBody">
+                        <tr>
+                            <td colspan="3" class="text-center">Cargando...</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <div class="modal-buttons">
-                <button class="btn-cancel" onclick="toggleModal('modalRanking', false)"
-                    style="width:100%;">Cerrar</button>
+                <button class="btn-cancel" onclick="window.toggleModal('modalRanking', false)">Cerrar</button>
             </div>
         </div>
     </div>
 
-    <script src="js/api/api.js"></script>
-    <script src="js/utils/ui.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/pages/results.js"></script>
+    <div id="modalSettingsMobile" class="modal-overlay hidden mobile-only">
+        <div class="modal-content"
+            style="position: absolute; bottom: 0; width: 100%; border-radius: 20px 20px 0 0; max-width: none; padding-bottom: 40px;">
+            <h2>Menú</h2>
+            <div class="menu-grid" style="grid-template-columns: 1fr; gap: 10px;">
+                <div class="menu-card"
+                    onclick="window.controllers.results.openRanking(); window.toggleModal('modalSettingsMobile', false)">
+                    <div><i class="ri-trophy-fill"></i></div><strong>Ranking Global</strong>
+                </div>
+                <div class="menu-card" onclick="window.location.href='/history.html'">
+                    <div><i class="ri-book-mark-line"></i></div><strong>Historia</strong>
+                </div>
+                <div id="btnAdminPanelMobile" class="menu-card hidden admin-link"
+                    onclick="window.location.href='/admin-panel.html'">
+                    <div><i class="ri-admin-line"></i></div><strong>Admin Panel</strong>
+                </div>
+            </div>
+            <div class="mt-20">
+                <button id="logoutButtonMobile" class="logout-btn" style="width: 100%;"><i
+                        class="ri-logout-box-line"></i> Cerrar Sesión</button>
+            </div>
+            <button class="btn-cancel mt-20" onclick="window.toggleModal('modalSettingsMobile', false)"
+                style="width: 100%;">Cerrar Menú</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/controllers/results.controller.js"></script>
 </body>
 
 </html>

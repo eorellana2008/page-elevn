@@ -1,7 +1,6 @@
 const pool = require('../../db/connection');
 
 const Match = {
-    // Obtener partidos (Ahora incluye match_round)
     getAll: async (competitionId = null) => {
         let query = `
             SELECT m.*, c.name as competition_name 
@@ -26,7 +25,6 @@ const Match = {
         return rows[0];
     },
 
-    // CREAR: Añadimos match_round
     create: async (data) => {
         const { team_home, team_away, match_date, competition_id, match_round } = data;
         const query = 'INSERT INTO matches (team_home, team_away, match_date, competition_id, match_round) VALUES (?, ?, ?, ?, ?)';
@@ -34,7 +32,6 @@ const Match = {
         return await pool.query(query, [team_home, team_away, match_date, compId, match_round]);
     },
 
-    // ACTUALIZAR: Añadimos match_round
     updateDetails: async (id, data) => {
         const { team_home, team_away, match_date, competition_id, match_round } = data;
         const query = `
@@ -59,6 +56,7 @@ const Match = {
         return await pool.query('DELETE FROM matches WHERE match_id = ?', [id]);
     },
 
+    // IMPORTANTE: Esta es la función que usa el perfil
     findNext: async () => {
         const query = `
             SELECT * FROM matches 
